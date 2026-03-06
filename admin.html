@@ -8,12 +8,13 @@
 
 <!-- ════════════════════════════════════════════════════════
      FIREBASE CONFIG — Same config as workshop.html
-     Replace these 6 values with yours from the Firebase Console
+     Replace these 6 values with yours from Firebase Console
      ════════════════════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, push, onValue }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, getDocs,
+           collection, deleteDoc, serverTimestamp, query, orderBy }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
@@ -25,12 +26,14 @@ const firebaseConfig = {
   appId: "1:1008860491414:web:fbfa1dbede3b7f6501dcb7"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-window.db = db;
-window.fb = { ref, set, push, onValue };
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  window._db = db;
+  window._fs = { doc, setDoc, getDoc, getDocs, collection, deleteDoc, serverTimestamp, query, orderBy };
+  window._firebaseReady = true;
+  document.dispatchEvent(new Event("firebase-ready"));
 </script>
+
 <style>
 /* ════════════════════════════════════════
    COPYRIGHT © 2026 Dr. C V Krishnaveni
@@ -72,6 +75,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .btn-login{width:100%;background:linear-gradient(135deg,var(--blue),var(--teal));color:white;border:none;padding:13px;border-radius:10px;cursor:pointer;font-family:var(--font);font-size:1rem;font-weight:800;box-shadow:0 4px 14px rgba(30,64,175,.3);}
 .btn-login:hover{opacity:.9;}
 .login-hint{font-size:.75rem;color:var(--muted);margin-top:.8rem;}
+
 /* ── MAIN LAYOUT ── */
 #scr-main{display:none;min-height:100vh;}
 
@@ -217,7 +221,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
     <p>Dr. C V Krishnaveni · AI Without Boundaries<br>Resource Person Portal</p>
     <input type="password" id="pwd-inp" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn-login" onclick="doLogin()">🔓 Sign In</button>
-    <div class="login-hint">Password set by you during Firebase setup.<br>Default hint: change this to something memorable.</div>
+    <div class="login-hint">
+      Default password: <strong>DrKrishnaveni2026</strong><br>
+      Password is case-sensitive. Change it inside the file.<br>
+      Once logged in, page refresh will keep you signed in.
+    </div>
   </div>
 </div>
 
@@ -238,11 +246,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
-<div style="margin:20px;">
-<button onclick="downloadWorkshopReport()">
-Download Workshop Report
-</button>
-</div>
+
   <div class="main-body">
 
     <!-- RESOURCE PERSON BANNER -->
@@ -347,7 +351,10 @@ Download Workshop Report
 // ══════════════════════════════════════════════════════════
 
 // ── CHANGE THIS PASSWORD ──
+// ════════════════════════════════════════════════════════
+// CHANGE THIS PASSWORD TO YOUR OWN SECRET PASSWORD
 const ADMIN_PASSWORD = "DrKrishnaveni2026";
+// ════════════════════════════════════════════════════════
 
 const GRP_MAP = {
   life:"Life Sciences", commerce:"Commerce",
@@ -362,21 +369,54 @@ const GRP_COLOR = {
 let allSessions = [];
 let currentDeployURL = window.location.origin + window.location.pathname.replace("admin.html","");
 
+// ── AUTO LOGIN CHECK (remembers login across page refresh) ──
+window.addEventListener("load", function(){
+  const alreadyLoggedIn = localStorage.getItem("aiwb_admin_auth") === "yes";
+  if(alreadyLoggedIn){
+    showMain();
+  } else {
+    document.getElementById("scr-login").style.display = "flex";
+    document.getElementById("scr-main").style.display  = "none";
+  }
+});
+
 // ── LOGIN ──
 function doLogin(){
-  const pwd = document.getElementById("pwd-inp").value;
+  const pwd = document.getElementById("pwd-inp").value.trim();
+
+  if(!pwd){
+    toast("⚠️ Please enter the password.");
+    return;
+  }
 
   if(pwd === ADMIN_PASSWORD){
-      localStorage.setItem("adminLogged","yes");
-      showMain();
+    // Save login state so page refresh keeps you logged in
+    localStorage.setItem("aiwb_admin_auth", "yes");
+    showMain();
   } else {
-      alert("Wrong password");
+    toast("❌ Wrong password. Try: DrKrishnaveni2026 (case-sensitive)");
+    document.getElementById("pwd-inp").value = "";
+    document.getElementById("pwd-inp").focus();
   }
 }
 
+// ── SHOW MAIN DASHBOARD (called after successful login) ──
+function showMain(){
+  document.getElementById("scr-login").style.display = "none";
+  document.getElementById("scr-main").style.display  = "block";
+  // Set today's date in the new session form
+  document.getElementById("ns-date").valueAsDate = new Date();
+  // Load all sessions from Firebase
+  waitFirebase().then(loadSessions);
+}
+
+// ── LOGOUT ──
 function doLogout(){
-   localStorage.removeItem("adminLogged");
-   location.reload();
+  localStorage.removeItem("aiwb_admin_auth");
+  document.getElementById("scr-login").style.display = "flex";
+  document.getElementById("scr-main").style.display  = "none";
+  document.getElementById("pwd-inp").value = "";
+  toast("✅ Signed out successfully.");
 }
 
 async function waitFirebase(){
@@ -409,7 +449,7 @@ async function createSession(){
       {merge:true}
     );
 
-  const workshopURL = `${location.origin}/?session=${sessionId}`;
+    const workshopURL = `${currentDeployURL}workshop.html?session=${sid}`;
     document.getElementById("link-url-text").textContent = workshopURL;
     document.getElementById("link-box").classList.add("show");
     toast("✅ Session created successfully!");
@@ -661,6 +701,5 @@ function closeModal(){ document.getElementById("sess-modal").classList.remove("o
 function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
 function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),3000);}
 </script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
