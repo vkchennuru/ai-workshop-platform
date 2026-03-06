@@ -413,7 +413,7 @@ async function createSession(){
       {merge:true}
     );
 
-    const workshopURL =`${location.origin}/?session=${sessionId}`;
+  const workshopURL = `${location.origin}/?session=${sessionId}`;
     document.getElementById("link-url-text").textContent = workshopURL;
     document.getElementById("link-box").classList.add("show");
     toast("✅ Session created successfully!");
