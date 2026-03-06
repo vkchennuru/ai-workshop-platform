@@ -16,15 +16,15 @@
            collection, deleteDoc, serverTimestamp, query, orderBy }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
-  authDomain: "aai-drcvk-interactive-webapp.firebaseapp.com",
-  databaseURL: "https://aai-drcvk-interactive-webapp-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "aai-drcvk-interactive-webapp",
-  storageBucket: "aai-drcvk-interactive-webapp.firebasestorage.app",
-  messagingSenderId: "1008860491414",
-  appId: "1:1008860491414:web:fbfa1dbede3b7f6501dcb7"
-};
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
+    authDomain:        "aai-drcvk-interactive-webapp.firebaseapp.com",
+    databaseURL:       "https://aai-drcvk-interactive-webapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "aai-drcvk-interactive-webapp",
+    storageBucket:     "aai-drcvk-interactive-webapp.firebasestorage.app",
+    messagingSenderId: "1008860491414",
+    appId:             "1:1008860491414:web:fbfa1dbede3b7f6501dcb7"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
@@ -367,7 +367,7 @@ const GRP_COLOR = {
 };
 
 let allSessions = [];
-let currentDeployURL = window.location.origin + window.location.pathname.replace("admin.html","");
+let currentDeployURL = window.location.origin + window.location.pathname.replace("admin.html","").replace(/\/+$/,"")+"/";
 
 // ── AUTO LOGIN CHECK (remembers login across page refresh) ──
 window.addEventListener("load", function(){
@@ -449,14 +449,14 @@ async function createSession(){
       {merge:true}
     );
 
-    const workshopURL = `${currentDeployURL}workshop.html?session=${sid}`;
+    const workshopURL = `${currentDeployURL}index.html?session=${sid}`;
     document.getElementById("link-url-text").textContent = workshopURL;
     document.getElementById("link-box").classList.add("show");
     toast("✅ Session created successfully!");
     loadSessions();
   } catch(e){
     // Firebase not configured — show demo link
-    const workshopURL = `${currentDeployURL}workshop.html?session=${sid}`;
+    const workshopURL = `${currentDeployURL}index.html?session=${sid}`;
     document.getElementById("link-url-text").textContent = workshopURL;
     document.getElementById("link-box").classList.add("show");
     toast("⚠️ Firebase not configured yet — showing demo link.");
