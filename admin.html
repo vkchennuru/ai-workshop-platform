@@ -11,10 +11,9 @@
      Replace these 6 values with yours from Firebase Console
      ════════════════════════════════════════════════════════ -->
 <script type="module">
-  import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, getDocs,
-           collection, deleteDoc, serverTimestamp, query, orderBy }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue, remove }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
@@ -27,9 +26,13 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-  window._db = db;
-  window._fs = { doc, setDoc, getDoc, getDocs, collection, deleteDoc, serverTimestamp, query, orderBy };
+  const db  = getDatabase(app);
+  window._db  = db;
+  window._ref = ref;
+  window._set = set;
+  window._get = get;
+  window._remove = remove;
+  window._onValue = onValue;
   window._firebaseReady = true;
   document.dispatchEvent(new Event("firebase-ready"));
 </script>
@@ -367,7 +370,7 @@ const GRP_COLOR = {
 };
 
 let allSessions = [];
-let currentDeployURL = window.location.origin + window.location.pathname.replace("admin.html","").replace(/\/+$/,"")+"/";
+let currentDeployURL = window.location.origin + window.location.pathname.replace("admin.html","");
 
 // ── AUTO LOGIN CHECK (remembers login across page refresh) ──
 window.addEventListener("load", function(){
@@ -424,6 +427,11 @@ async function waitFirebase(){
   return new Promise(r=>document.addEventListener("firebase-ready",r,{once:true}));
 }
 
+function dbPath(path){ return window._ref(window._db, path); }
+async function fbGet(path){ const s=await window._get(dbPath(path)); return s.exists()?s.val():null; }
+async function fbSet(path,data){ await window._set(dbPath(path),data); }
+async function fbRemove(path){ await window._remove(dbPath(path)); }
+
 // ── CREATE SESSION ──
 async function createSession(){
   const college = document.getElementById("ns-college").value.trim();
@@ -440,26 +448,21 @@ async function createSession(){
   const sid = (college.replace(/[^a-zA-Z0-9]/g,"-") + "-" + date).toLowerCase();
 
   try{
-    await window._fs.setDoc(
-      window._fs.doc(window._db,"sessions",sid),
-      { college, city, date:dateFormatted, type, sessionId:sid,
-        createdBy:"Dr. C V Krishnaveni", createdAt:window._fs.serverTimestamp(),
-        resourcePerson:"Dr. C V Krishnaveni",
-        institution:"SKR & SKR GCW(A), Kadapa" },
-      {merge:true}
-    );
-
-    const workshopURL = `${currentDeployURL}index.html?session=${sid}`;
+    await fbSet(`sessions/${sid}/info`,{
+      college, city, date:dateFormatted, type, sessionId:sid,
+      createdBy:"Dr. C V Krishnaveni",
+      resourcePerson:"Dr. C V Krishnaveni",
+      institution:"SKR & SKR GCW(A), Kadapa",
+      createdAt: Date.now()
+    });
+    const workshopURL = `https://drcvk-aai.netlify.app/index.html?session=${sid}`;
     document.getElementById("link-url-text").textContent = workshopURL;
     document.getElementById("link-box").classList.add("show");
-    toast("✅ Session created successfully!");
+    toast("✅ Session created! Share the link with students.");
     loadSessions();
   } catch(e){
-    // Firebase not configured — show demo link
-    const workshopURL = `${currentDeployURL}index.html?session=${sid}`;
-    document.getElementById("link-url-text").textContent = workshopURL;
-    document.getElementById("link-box").classList.add("show");
-    toast("⚠️ Firebase not configured yet — showing demo link.");
+    console.error(e);
+    toast("❌ Error: "+e.message);
   }
 }
 
@@ -478,38 +481,23 @@ function copyLink(){
 async function loadSessions(){
   const container = document.getElementById("sessions-container");
   container.innerHTML = `<div class="loading"><span class="spinner"></span>Loading sessions…</div>`;
-
   try{
-    const snap = await window._fs.getDocs(
-      window._fs.collection(window._db,"sessions")
-    );
-
+    const data = await fbGet("sessions");
     allSessions = [];
-    for(const d of snap.docs){
-      const info = d.data();
-      // count students
-      const stuSnap = await window._fs.getDocs(
-        window._fs.collection(window._db,"sessions",d.id,"students")
-      );
-      const students = stuSnap.docs.map(s=>s.data());
-      allSessions.push({...info, id:d.id, students, studentCount:students.length});
+    if(data){
+      for(const [sid, val] of Object.entries(data)){
+        const info     = val.info || {};
+        const students = val.students ? Object.values(val.students) : [];
+        allSessions.push({...info, id:sid, students, studentCount:students.length});
+      }
     }
-
-    // sort by createdAt desc (newest first)
-    allSessions.sort((a,b)=>{
-      const ta = a.createdAt?.toMillis?.()||0;
-      const tb = b.createdAt?.toMillis?.()||0;
-      return tb-ta;
-    });
-
+    allSessions.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     updateGlobalStats();
     renderSessions();
-  } catch(e){
+  }catch(e){
     container.innerHTML = `<div class="empty-state">
-      <div class="es-icon">⚙️</div>
-      <p><strong>Firebase not configured yet.</strong><br>
-      Replace the REPLACE_WITH_YOUR_ values at the top of this file with your Firebase config.<br>
-      See the setup guide for step-by-step instructions.</p>
+      <div class="es-icon">❌</div>
+      <p><strong>Error loading sessions.</strong><br>${e.message}</p>
     </div>`;
   }
 }
@@ -680,17 +668,13 @@ function downloadCSV(sid){
 
 // ── DELETE SESSION ──
 async function deleteSession(sid, name){
-  const confirm = window.confirm(`Delete session "${name}"?\n\nThis will permanently delete all student data for this session.\n\nMake sure you have downloaded the CSV first!`);
-  if(!confirm) return;
+  const ok = window.confirm(`Delete session "${name}"?\n\nThis permanently deletes all student data.\nDownload CSV first!`);
+  if(!ok) return;
   try{
-    // delete all student docs
-    const stuSnap = await window._fs.getDocs(window._fs.collection(window._db,"sessions",sid,"students"));
-    for(const d of stuSnap.docs){ await window._fs.deleteDoc(d.ref); }
-    // delete session doc
-    await window._fs.deleteDoc(window._fs.doc(window._db,"sessions",sid));
-    toast("🗑️ Session deleted. Firebase space freed.");
+    await fbRemove(`sessions/${sid}`);
+    toast("🗑️ Session deleted. Space freed.");
     loadSessions();
-  }catch(e){ toast("Error deleting session. Check Firebase config."); }
+  }catch(e){ toast("Error deleting: "+e.message); }
 }
 
 // ── MODAL ──
