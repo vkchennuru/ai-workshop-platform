@@ -365,22 +365,18 @@ let currentDeployURL = window.location.origin + window.location.pathname.replace
 // ── LOGIN ──
 function doLogin(){
   const pwd = document.getElementById("pwd-inp").value;
+
   if(pwd === ADMIN_PASSWORD){
-    document.getElementById("scr-login").style.display = "none";
-    document.getElementById("scr-main").style.display  = "block";
-    // set today's date
-    document.getElementById("ns-date").valueAsDate = new Date();
-    waitFirebase().then(loadSessions);
+      localStorage.setItem("adminLogged","yes");
+      showMain();
   } else {
-    toast("❌ Incorrect password. Please try again.");
-    document.getElementById("pwd-inp").value = "";
+      alert("Wrong password");
   }
 }
 
 function doLogout(){
-  document.getElementById("scr-login").style.display = "flex";
-  document.getElementById("scr-main").style.display  = "none";
-  document.getElementById("pwd-inp").value = "";
+   localStorage.removeItem("adminLogged");
+   location.reload();
 }
 
 async function waitFirebase(){
