@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard – AI Without Boundaries | Dr. C V Krishnaveni</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+
+<!-- ════════════════════════════════════════════════════════
+     FIREBASE CONFIG — Same config as workshop.html
+     Replace these 6 values with yours from Firebase Console
+     ════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, push, onValue }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
+  authDomain: "aai-drcvk-interactive-webapp.firebaseapp.com",
+  databaseURL: "https://aai-drcvk-interactive-webapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "aai-drcvk-interactive-webapp",
+  storageBucket: "aai-drcvk-interactive-webapp.firebasestorage.app",
+  messagingSenderId: "1008860491414",
+  appId: "1:1008860491414:web:fbfa1dbede3b7f6501dcb7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.db = db;
+window.fb = { ref, set, push, onValue };
+</script>
+<style>
+/* ════════════════════════════════════════
+   COPYRIGHT © 2026 Dr. C V Krishnaveni
+   Lecturer in Computer Science,
+   SKR & SKR GCW(A), Kadapa
+   All rights reserved.
+════════════════════════════════════════ */
+:root{
+  --bg:#F0F4FF; --white:#FFFFFF; --text:#1A1A2E; --text2:#374151;
+  --muted:#6B7280; --border:#CBD5E1; --shadow:0 2px 12px rgba(0,0,0,.09);
+  --shadow-lg:0 6px 28px rgba(0,0,0,.14);
+  --blue:#1E40AF; --blue2:#2563EB; --blue-lt:#EFF6FF; --blue-mid:#BFDBFE;
+  --teal:#0891B2; --teal-lt:#E0F7FA;
+  --green:#16A34A; --green-lt:#F0FDF4;
+  --orange:#EA580C; --orange-lt:#FFF7ED;
+  --red:#DC2626; --red-lt:#FEF2F2;
+  --gold:#D97706; --gold-lt:#FFFBEB;
+  --purple:#7C3AED; --purple-lt:#F5F3FF;
+  --r:14px; --font:'Nunito',sans-serif; --serif:'Merriweather',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;min-height:100vh;}
+
+/* ── LOGIN SCREEN ── */
+#scr-login{
+  display:flex;min-height:100vh;align-items:center;justify-content:center;
+  background:linear-gradient(150deg,#EFF6FF 0%,#F0F4FF 60%,#E0F7FA 100%);
+  padding:1rem;
+}
+.login-card{
+  background:var(--white);border-radius:20px;border:2px solid var(--blue-mid);
+  padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:var(--shadow-lg);text-align:center;
+}
+.login-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--blue2),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:white;font-weight:900;margin:0 auto 1rem;box-shadow:0 4px 16px rgba(37,99,235,.3);}
+.login-card h2{font-family:var(--serif);font-size:1.3rem;color:var(--text);margin-bottom:4px;}
+.login-card p{font-size:.85rem;color:var(--muted);font-weight:600;margin-bottom:1.5rem;}
+.login-card input{width:100%;border:2px solid var(--border);background:var(--bg);color:var(--text);padding:13px 14px;border-radius:10px;font-family:var(--font);font-size:1rem;font-weight:600;margin-bottom:.8rem;text-align:center;letter-spacing:3px;}
+.login-card input:focus{outline:none;border-color:var(--blue2);background:white;}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--blue),var(--teal));color:white;border:none;padding:13px;border-radius:10px;cursor:pointer;font-family:var(--font);font-size:1rem;font-weight:800;box-shadow:0 4px 14px rgba(30,64,175,.3);}
+.btn-login:hover{opacity:.9;}
+.login-hint{font-size:.75rem;color:var(--muted);margin-top:.8rem;}
+
+/* ── MAIN LAYOUT ── */
+#scr-main{display:none;min-height:100vh;}
+
+.top-bar{
+  background:var(--white);border-bottom:2px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.8rem 1.5rem;position:sticky;top:0;z-index:100;
+}
+.tb-left{display:flex;align-items:center;gap:1rem;}
+.tb-logo{font-size:1.5rem;}
+.tb-title{font-family:var(--serif);font-size:1rem;color:var(--blue);font-weight:700;}
+.tb-subtitle{font-size:.73rem;color:var(--muted);font-weight:600;}
+.tb-right{display:flex;align-items:center;gap:.7rem;}
+.badge-admin{background:var(--blue-lt);border:1.5px solid var(--blue-mid);color:var(--blue2);padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:800;}
+.btn-logout{background:none;border:2px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.78rem;font-weight:700;transition:all .2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+.main-body{padding:1.5rem;max-width:1100px;margin:0 auto;}
+
+/* ── RESOURCE PERSON BANNER ── */
+.rp-banner{
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  border-radius:16px;padding:1.4rem 1.8rem;margin-bottom:1.5rem;
+  color:white;display:flex;align-items:center;gap:1.2rem;
+  box-shadow:0 6px 24px rgba(30,64,175,.3);
+}
+.rp-av{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;flex-shrink:0;}
+.rp-role{font-size:.72rem;font-weight:800;opacity:.8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;}
+.rp-name{font-family:var(--serif);font-size:1.15rem;margin-bottom:2px;}
+.rp-dept{font-size:.82rem;opacity:.9;font-weight:600;}
+.rp-copy{font-size:.72rem;opacity:.7;margin-top:4px;}
+
+/* ── SECTION HEADING ── */
+.sec-heading{font-family:var(--serif);font-size:1.2rem;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.4rem;box-shadow:var(--shadow);}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat-box{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.1rem;text-align:center;box-shadow:var(--shadow);}
+.stat-box .sv{font-size:2rem;font-weight:900;color:var(--blue);font-family:var(--serif);line-height:1;}
+.stat-box .sl{font-size:.78rem;font-weight:700;color:var(--muted);margin-top:4px;}
+.stat-box .si{font-size:1.5rem;margin-bottom:5px;}
+
+/* ── NEW SESSION FORM ── */
+.new-sess-card{background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:var(--r);padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow);}
+.new-sess-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--blue);margin-bottom:1rem;}
+.form-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem;margin-bottom:.8rem;}
+.ff{display:flex;flex-direction:column;gap:4px;}
+.ff label{font-size:.78rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+.ff input,.ff select{border:2px solid var(--border);background:var(--white);color:var(--text);padding:10px 12px;border-radius:9px;font-family:var(--font);font-size:.92rem;font-weight:600;transition:border-color .2s;}
+.ff input:focus,.ff select:focus{outline:none;border-color:var(--blue2);}
+.btn-create{background:linear-gradient(135deg,var(--green),#22C55E);color:white;border:none;padding:12px 24px;border-radius:10px;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:800;box-shadow:0 4px 14px rgba(22,163,74,.3);transition:all .2s;}
+.btn-create:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(22,163,74,.35);}
+
+/* ── SESSION LINK BOX ── */
+.link-box{background:var(--green-lt);border:2px solid var(--green);border-radius:12px;padding:1rem 1.3rem;margin-top:1rem;display:none;}
+.link-box.show{display:block;}
+.link-box h4{font-size:.88rem;font-weight:800;color:var(--green);margin-bottom:.5rem;}
+.link-url{font-family:'Courier New',monospace;font-size:.85rem;color:var(--text);background:var(--white);border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;word-break:break-all;margin-bottom:.6rem;}
+.btn-copy-link{background:var(--green);color:white;border:none;padding:7px 16px;border-radius:7px;cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:800;transition:all .2s;}
+.btn-copy-link:hover{background:#15803D;}
+
+/* ── SESSIONS TABLE ── */
+.sessions-grid{display:flex;flex-direction:column;gap:.8rem;}
+.sess-row{
+  background:var(--white);border:2px solid var(--border);border-radius:var(--r);
+  padding:1.1rem 1.3rem;box-shadow:var(--shadow);
+  display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;
+}
+.sess-row:hover{border-color:var(--blue-mid);}
+.sr-top{display:flex;align-items:center;gap:.8rem;margin-bottom:.3rem;flex-wrap:wrap;}
+.sr-name{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--text);}
+.sr-date{font-size:.78rem;font-weight:700;color:var(--blue2);background:var(--blue-lt);padding:3px 10px;border-radius:100px;}
+.sr-city{font-size:.78rem;font-weight:700;color:var(--muted);}
+.sr-meta{display:flex;gap:1rem;flex-wrap:wrap;}
+.sr-stat{font-size:.8rem;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:4px;}
+.sr-actions{display:flex;gap:.5rem;align-items:center;flex-shrink:0;flex-wrap:wrap;}
+.btn-view{background:var(--blue-lt);border:2px solid var(--blue-mid);color:var(--blue2);padding:7px 13px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.8rem;font-weight:800;transition:all .2s;white-space:nowrap;}
+.btn-view:hover{background:var(--blue2);color:white;}
+.btn-csv{background:var(--green-lt);border:2px solid var(--green);color:var(--green);padding:7px 13px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.8rem;font-weight:800;transition:all .2s;white-space:nowrap;}
+.btn-csv:hover{background:var(--green);color:white;}
+.btn-del{background:var(--red-lt);border:2px solid #FCA5A5;color:var(--red);padding:7px 10px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.8rem;font-weight:800;transition:all .2s;}
+.btn-del:hover{background:var(--red);color:white;}
+.sess-count{display:inline-flex;align-items:center;gap:4px;background:var(--blue-lt);border:1.5px solid var(--blue-mid);border-radius:100px;padding:3px 10px;font-size:.75rem;font-weight:800;color:var(--blue2);}
+
+/* ── MODAL: SESSION DETAILS ── */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:760px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.22);transform:scale(.95);transition:transform .25s;}
+.modal-overlay.open .modal{transform:scale(1);}
+.modal-head{padding:1.4rem 1.6rem;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:10;}
+.modal-head h3{font-family:var(--serif);font-size:1.15rem;color:var(--text);}
+.modal-body{padding:1.4rem 1.6rem;}
+.btn-mclose{background:var(--bg);border:2px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:var(--font);font-weight:800;font-size:.88rem;transition:all .2s;}
+.btn-mclose:hover{border-color:var(--red);color:var(--red);}
+
+/* ── STUDENTS TABLE ── */
+.stu-table{width:100%;border-collapse:collapse;font-size:.83rem;}
+.stu-table th{background:var(--blue-lt);color:var(--blue2);font-weight:800;padding:9px 11px;text-align:left;border-bottom:2px solid var(--blue-mid);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;}
+.stu-table td{padding:9px 11px;border-bottom:1.5px solid var(--bg);font-weight:600;color:var(--text2);}
+.stu-table tr:hover td{background:var(--blue-lt);}
+.stu-name{font-weight:800;color:var(--text);}
+.grp-badge{font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:100px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;z-index:999;background:var(--text);color:white;padding:11px 18px;border-radius:10px;font-size:.88rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:300px;box-shadow:var(--shadow-lg);}
+.toast.show{opacity:1;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:1.5rem 1rem;border-top:2px solid var(--border);font-size:.73rem;color:var(--muted);font-weight:600;line-height:1.9;background:var(--white);margin-top:2rem;}
+.footer strong{color:var(--blue2);}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:2rem;color:var(--muted);font-weight:700;}
+.spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.fade-up{animation:fadeUp .5s ease both;}
+
+.empty-state{text-align:center;padding:2.5rem 1rem;}
+.empty-state .es-icon{font-size:3rem;margin-bottom:.8rem;}
+.empty-state p{color:var(--muted);font-weight:600;font-size:.9rem;}
+
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .sr-actions{flex-direction:column;align-items:stretch;}
+  .sess-row{grid-template-columns:1fr;}
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOGIN ════════ -->
+<div id="scr-login">
+  <div class="login-card fade-up">
+    <div class="login-avatar">🔐</div>
+    <h2>Admin Dashboard</h2>
+    <p>Dr. C V Krishnaveni · AI Without Boundaries<br>Resource Person Portal</p>
+    <input type="password" id="pwd-inp" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()">🔓 Sign In</button>
+    <div class="login-hint">Password set by you during Firebase setup.<br>Default hint: change this to something memorable.</div>
+  </div>
+</div>
+
+<!-- ════════ MAIN ════════ -->
+<div id="scr-main">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="tb-left">
+      <div class="tb-logo">⚡</div>
+      <div>
+        <div class="tb-title">AI Without Boundaries — Admin</div>
+        <div class="tb-subtitle">Dr. C V Krishnaveni · Resource Person Dashboard</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <span class="badge-admin">🔐 Admin</span>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main-body">
+
+    <!-- RESOURCE PERSON BANNER -->
+    <div class="rp-banner fade-up">
+      <div class="rp-av">VK</div>
+      <div>
+        <div class="rp-role">Resource Person</div>
+        <div class="rp-name">Dr. C V Krishnaveni</div>
+        <div class="rp-dept">Lecturer in Computer Science · SKR &amp; SKR GCW(A), Kadapa</div>
+        <div class="rp-copy">© 2026 All rights reserved · AI Without Boundaries Workshop Platform</div>
+      </div>
+    </div>
+
+    <!-- GLOBAL STATS -->
+    <div class="stats-row fade-up" id="global-stats">
+      <div class="stat-box"><div class="si">🏛️</div><div class="sv" id="gs-colleges">—</div><div class="sl">Colleges</div></div>
+      <div class="stat-box"><div class="si">👥</div><div class="sv" id="gs-students">—</div><div class="sl">Total Students</div></div>
+      <div class="stat-box"><div class="si">📅</div><div class="sv" id="gs-sessions">—</div><div class="sl">Sessions</div></div>
+      <div class="stat-box"><div class="si">🏆</div><div class="sv" id="gs-avgscore">—</div><div class="sl">Avg Score</div></div>
+    </div>
+
+    <!-- NEW SESSION -->
+    <div class="new-sess-card fade-up">
+      <h3>➕ Create New Workshop Session</h3>
+      <div class="form-row">
+        <div class="ff">
+          <label>College / Institution Name *</label>
+          <input type="text" id="ns-college" placeholder="e.g. GDC Avanigadda">
+        </div>
+        <div class="ff">
+          <label>City / District *</label>
+          <input type="text" id="ns-city" placeholder="e.g. Avanigadda, Krishna Dist.">
+        </div>
+        <div class="ff">
+          <label>Date *</label>
+          <input type="date" id="ns-date">
+        </div>
+        <div class="ff">
+          <label>Workshop Type</label>
+          <select id="ns-type">
+            <option value="International Webinar">International Webinar</option>
+            <option value="National Webinar">National Webinar</option>
+            <option value="State Level Workshop">State Level Workshop</option>
+            <option value="College Level Workshop">College Level Workshop</option>
+            <option value="FDP (Faculty Development)">FDP (Faculty Development)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-create" onclick="createSession()">🚀 Create Session &amp; Get Link</button>
+
+      <div class="link-box" id="link-box">
+        <h4>✅ Session Created! Share this link with students:</h4>
+        <div class="link-url" id="link-url-text">—</div>
+        <button class="btn-copy-link" onclick="copyLink()">📋 Copy Link</button>
+        <div style="font-size:.78rem;color:var(--green);font-weight:700;margin-top:.5rem;">
+          Students open this link on their phones → Enter name &amp; group → Workshop starts!
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL SESSIONS -->
+    <div class="sec-heading fade-up">
+      🏛️ All Workshop Sessions
+      <span class="sess-count" id="sess-count-badge">Loading…</span>
+      <button onclick="loadSessions()" style="margin-left:auto;background:var(--white);border:2px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.78rem;font-weight:700;">🔄 Refresh</button>
+    </div>
+
+    <div id="sessions-container">
+      <div class="loading"><span class="spinner"></span>Loading sessions…</div>
+    </div>
+
+  </div><!-- /main-body -->
+
+  <footer class="footer">
+    <strong>© 2026 Dr. C V Krishnaveni</strong> · Lecturer in Computer Science, SKR &amp; SKR GCW(A), Kadapa<br>
+    "AI Without Boundaries" Workshop Platform · Admin Evidence Dashboard · All rights reserved.<br>
+    This platform is designed for academic workshop management and evidence collection.<br>
+    Unauthorised access or redistribution is strictly prohibited.
+  </footer>
+
+</div><!-- /scr-main -->
+
+<!-- SESSION DETAILS MODAL -->
+<div class="modal-overlay" id="sess-modal" onclick="maybeCloseModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Session Details</h3>
+      <button class="btn-mclose" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="loading"><span class="spinner"></span>Loading…</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// COPYRIGHT © 2026 Dr. C V Krishnaveni
+// Admin Dashboard — Evidence Management System
+// ══════════════════════════════════════════════════════════
+
+// ── CHANGE THIS PASSWORD ──
+const ADMIN_PASSWORD = "DrKrishnaveni2026";
+
+const GRP_MAP = {
+  life:"Life Sciences", commerce:"Commerce",
+  humanities:"Humanities", math:"Math & Sciences", cs:"Computer Science"
+};
+const GRP_COLOR = {
+  life:{c:"#16A34A",lt:"#F0FDF4"}, commerce:{c:"#1E40AF",lt:"#EFF6FF"},
+  humanities:{c:"#7C3AED",lt:"#F5F3FF"}, math:{c:"#DC2626",lt:"#FEF2F2"},
+  cs:{c:"#EA580C",lt:"#FFF7ED"}
+};
+
+let allSessions = [];
+let currentDeployURL = window.location.origin + window.location.pathname.replace("admin.html","");
+
+// ── LOGIN ──
+function doLogin(){
+  const pwd = document.getElementById("pwd-inp").value;
+  if(pwd === ADMIN_PASSWORD){
+    document.getElementById("scr-login").style.display = "none";
+    document.getElementById("scr-main").style.display  = "block";
+    // set today's date
+    document.getElementById("ns-date").valueAsDate = new Date();
+    waitFirebase().then(loadSessions);
+  } else {
+    toast("❌ Incorrect password. Please try again.");
+    document.getElementById("pwd-inp").value = "";
+  }
+}
+
+function doLogout(){
+  document.getElementById("scr-login").style.display = "flex";
+  document.getElementById("scr-main").style.display  = "none";
+  document.getElementById("pwd-inp").value = "";
+}
+
+async function waitFirebase(){
+  if(window._firebaseReady) return;
+  return new Promise(r=>document.addEventListener("firebase-ready",r,{once:true}));
+}
+
+// ── CREATE SESSION ──
+async function createSession(){
+  const college = document.getElementById("ns-college").value.trim();
+  const city    = document.getElementById("ns-city").value.trim();
+  const date    = document.getElementById("ns-date").value;
+  const type    = document.getElementById("ns-type").value;
+
+  if(!college){toast("Please enter college name 🏛️");return;}
+  if(!city)   {toast("Please enter city / district 📍");return;}
+  if(!date)   {toast("Please select a date 📅");return;}
+
+  const dateFormatted = new Date(date).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+  // session ID: college + date, URL-safe
+  const sid = (college.replace(/[^a-zA-Z0-9]/g,"-") + "-" + date).toLowerCase();
+
+  try{
+    await window._fs.setDoc(
+      window._fs.doc(window._db,"sessions",sid),
+      { college, city, date:dateFormatted, type, sessionId:sid,
+        createdBy:"Dr. C V Krishnaveni", createdAt:window._fs.serverTimestamp(),
+        resourcePerson:"Dr. C V Krishnaveni",
+        institution:"SKR & SKR GCW(A), Kadapa" },
+      {merge:true}
+    );
+
+    const workshopURL = `${currentDeployURL}workshop.html?session=${sid}`;
+    document.getElementById("link-url-text").textContent = workshopURL;
+    document.getElementById("link-box").classList.add("show");
+    toast("✅ Session created successfully!");
+    loadSessions();
+  } catch(e){
+    // Firebase not configured — show demo link
+    const workshopURL = `${currentDeployURL}workshop.html?session=${sid}`;
+    document.getElementById("link-url-text").textContent = workshopURL;
+    document.getElementById("link-box").classList.add("show");
+    toast("⚠️ Firebase not configured yet — showing demo link.");
+  }
+}
+
+function copyLink(){
+  const url = document.getElementById("link-url-text").textContent;
+  navigator.clipboard.writeText(url).then(()=>toast("📋 Link copied!"))
+  .catch(()=>{
+    const ta=document.createElement("textarea");ta.value=url;
+    ta.style.cssText="position:fixed;opacity:0;";document.body.appendChild(ta);
+    ta.select();document.execCommand("copy");document.body.removeChild(ta);
+    toast("📋 Link copied!");
+  });
+}
+
+// ── LOAD ALL SESSIONS ──
+async function loadSessions(){
+  const container = document.getElementById("sessions-container");
+  container.innerHTML = `<div class="loading"><span class="spinner"></span>Loading sessions…</div>`;
+
+  try{
+    const snap = await window._fs.getDocs(
+      window._fs.collection(window._db,"sessions")
+    );
+
+    allSessions = [];
+    for(const d of snap.docs){
+      const info = d.data();
+      // count students
+      const stuSnap = await window._fs.getDocs(
+        window._fs.collection(window._db,"sessions",d.id,"students")
+      );
+      const students = stuSnap.docs.map(s=>s.data());
+      allSessions.push({...info, id:d.id, students, studentCount:students.length});
+    }
+
+    // sort by createdAt desc (newest first)
+    allSessions.sort((a,b)=>{
+      const ta = a.createdAt?.toMillis?.()||0;
+      const tb = b.createdAt?.toMillis?.()||0;
+      return tb-ta;
+    });
+
+    updateGlobalStats();
+    renderSessions();
+  } catch(e){
+    container.innerHTML = `<div class="empty-state">
+      <div class="es-icon">⚙️</div>
+      <p><strong>Firebase not configured yet.</strong><br>
+      Replace the REPLACE_WITH_YOUR_ values at the top of this file with your Firebase config.<br>
+      See the setup guide for step-by-step instructions.</p>
+    </div>`;
+  }
+}
+
+function updateGlobalStats(){
+  const totalStudents = allSessions.reduce((a,s)=>a+s.studentCount,0);
+  const allScores = allSessions.flatMap(s=>s.students.map(st=>st.score||0));
+  const avgScore  = allScores.length ? Math.round(allScores.reduce((a,b)=>a+b,0)/allScores.length) : 0;
+  document.getElementById("gs-colleges").textContent = allSessions.length;
+  document.getElementById("gs-students").textContent = totalStudents;
+  document.getElementById("gs-sessions").textContent = allSessions.length;
+  document.getElementById("gs-avgscore").textContent = avgScore+" pts";
+  document.getElementById("sess-count-badge").textContent = allSessions.length+" sessions";
+}
+
+function renderSessions(){
+  const container = document.getElementById("sessions-container");
+  if(!allSessions.length){
+    container.innerHTML=`<div class="empty-state"><div class="es-icon">🏛️</div><p>No sessions yet. Create your first session above!</p></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="sessions-grid">${allSessions.map(s=>sessionRowHTML(s)).join("")}</div>`;
+}
+
+function sessionRowHTML(s){
+  const avgScore = s.studentCount ? Math.round(s.students.reduce((a,st)=>a+(st.score||0),0)/s.studentCount) : 0;
+  const typeColor = s.type?.includes("International")?"var(--blue)":s.type?.includes("National")?"var(--purple)":"var(--teal)";
+  return `<div class="sess-row fade-up">
+    <div>
+      <div class="sr-top">
+        <span class="sr-name">🏛️ ${s.college||"—"}</span>
+        <span class="sr-date">📅 ${s.date||"—"}</span>
+        <span class="sr-city">📍 ${s.city||"—"}</span>
+        <span style="font-size:.72rem;font-weight:800;padding:2px 9px;border-radius:100px;background:#F3EEFF;color:${typeColor};">${s.type||"Workshop"}</span>
+      </div>
+      <div class="sr-meta">
+        <span class="sr-stat">👥 <strong>${s.studentCount}</strong> students</span>
+        <span class="sr-stat">🏆 Avg <strong>${avgScore} pts</strong></span>
+        <span class="sr-stat">🆔 <code style="font-size:.72rem;background:var(--bg);padding:1px 5px;border-radius:4px;">${s.id}</code></span>
+      </div>
+    </div>
+    <div class="sr-actions">
+      <button class="btn-view" onclick="viewSession('${s.id}')">👁️ View Details</button>
+      <button class="btn-csv"  onclick="downloadCSV('${s.id}')">⬇️ Download CSV</button>
+      <button class="btn-del"  onclick="deleteSession('${s.id}','${esc(s.college||"")}')">🗑️</button>
+    </div>
+  </div>`;
+}
+
+// ── VIEW SESSION MODAL ──
+function viewSession(sid){
+  const s = allSessions.find(x=>x.id===sid);
+  if(!s) return;
+  document.getElementById("modal-title").textContent = `${s.college} · ${s.date}`;
+  document.getElementById("sess-modal").classList.add("open");
+
+  const students = [...s.students].sort((a,b)=>(b.score||0)-(a.score||0));
+  const avgScore = students.length ? Math.round(students.reduce((a,st)=>a+(st.score||0),0)/students.length) : 0;
+
+  // group breakdown
+  const grpCount = {};
+  students.forEach(st=>{ grpCount[st.group]=(grpCount[st.group]||0)+1; });
+  const grpHTML = Object.entries(grpCount).map(([g,c])=>{
+    const gc=GRP_COLOR[g]||{c:"#999",lt:"#eee"};
+    return `<span style="font-size:.75rem;font-weight:800;padding:3px 10px;border-radius:100px;background:${gc.lt};color:${gc.c};">${GRP_MAP[g]||g}: ${c}</span>`;
+  }).join(" ");
+
+  const tableRows = students.map((st,i)=>{
+    const gc=GRP_COLOR[st.group]||{c:"#999",lt:"#eee"};
+    const medals=["🥇","🥈","🥉"];
+    return `<tr>
+      <td>${medals[i]||i+1}</td>
+      <td class="stu-name">${st.name||"—"}</td>
+      <td><span class="grp-badge" style="background:${gc.lt};color:${gc.c};">${GRP_MAP[st.group]||st.group||"—"}</span></td>
+      <td style="font-weight:800;color:var(--orange);">${st.score||0} pts</td>
+      <td>${st.steps||0}</td>
+      <td>${st.challenges||0}</td>
+      <td>${st.quizCorrect||0}/10</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("modal-body").innerHTML = `
+    <!-- Summary -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.8rem;margin-bottom:1.2rem;">
+      <div style="background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:10px;padding:.8rem;text-align:center;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--blue);">${students.length}</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);">Students</div>
+      </div>
+      <div style="background:var(--gold-lt);border:2px solid #FDE68A;border-radius:10px;padding:.8rem;text-align:center;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--gold);">${avgScore}</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);">Avg Score</div>
+      </div>
+      <div style="background:var(--green-lt);border:2px solid var(--green);border-radius:10px;padding:.8rem;text-align:center;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--green);">${students.filter(s=>s.score>0).length}</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);">Active</div>
+      </div>
+      <div style="background:var(--purple-lt);border:2px solid #DDD6FE;border-radius:10px;padding:.8rem;text-align:center;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--purple);">${s.type?.split(" ")[0]||"—"}</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);">Type</div>
+      </div>
+    </div>
+
+    <!-- Group breakdown -->
+    <div style="margin-bottom:1rem;">
+      <div style="font-size:.78rem;font-weight:800;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px;">Students by Group</div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;">${grpHTML||"<span style='color:var(--muted);font-size:.82rem;'>No students yet</span>"}</div>
+    </div>
+
+    <!-- Download button -->
+    <div style="margin-bottom:1rem;">
+      <button class="btn-csv" onclick="downloadCSV('${s.id}')" style="padding:9px 18px;font-size:.88rem;">⬇️ Download Full CSV Report</button>
+    </div>
+
+    <!-- Students table -->
+    ${students.length ? `
+    <div style="overflow-x:auto;">
+      <table class="stu-table">
+        <thead><tr><th>#</th><th>Name</th><th>Group</th><th>Score</th><th>Steps</th><th>Challenges</th><th>Quiz</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>` : `<div class="empty-state"><div class="es-icon">👥</div><p>No students have joined this session yet.</p></div>`}
+  `;
+}
+
+// ── DOWNLOAD CSV ──
+function downloadCSV(sid){
+  const s = allSessions.find(x=>x.id===sid);
+  if(!s){toast("Session not found");return;}
+
+  const students = [...s.students].sort((a,b)=>(b.score||0)-(a.score||0));
+  const rows = [
+    // Header block
+    ["AI Without Boundaries — Workshop Evidence Report"],
+    ["Resource Person","Dr. C V Krishnaveni"],
+    ["Designation","Lecturer in Computer Science"],
+    ["Institution","SKR & SKR GCW(A), Kadapa"],
+    ["College Visited",s.college||""],
+    ["City / District",s.city||""],
+    ["Date",s.date||""],
+    ["Workshop Type",s.type||""],
+    ["Session ID",s.id||""],
+    ["Total Students",students.length],
+    ["Average Score",students.length?Math.round(students.reduce((a,b)=>a+(b.score||0),0)/students.length):0],
+    ["Report Generated",new Date().toLocaleString("en-IN")],
+    ["Copyright","© 2026 Dr. C V Krishnaveni. All rights reserved."],
+    [],
+    // Table header
+    ["#","Student Name","Group / Stream","Total Score","Steps Completed","Challenges Done","Quiz Correct","College","Date","Workshop Type"],
+    // Student rows
+    ...students.map((st,i)=>[
+      i+1,
+      st.name||"", GRP_MAP[st.group]||st.group||"",
+      st.score||0, st.steps||0, st.challenges||0,
+      `${st.quizCorrect||0}/10`,
+      st.college||s.college||"", st.date||s.date||"", st.type||s.type||""
+    ])
+  ];
+
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href=url; a.download=`Workshop_Evidence_${s.college?.replace(/[^a-z0-9]/gi,"_")}_${s.date?.replace(/[^a-z0-9]/gi,"_")}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("⬇️ CSV downloaded — open in Excel!");
+}
+
+// ── DELETE SESSION ──
+async function deleteSession(sid, name){
+  const confirm = window.confirm(`Delete session "${name}"?\n\nThis will permanently delete all student data for this session.\n\nMake sure you have downloaded the CSV first!`);
+  if(!confirm) return;
+  try{
+    // delete all student docs
+    const stuSnap = await window._fs.getDocs(window._fs.collection(window._db,"sessions",sid,"students"));
+    for(const d of stuSnap.docs){ await window._fs.deleteDoc(d.ref); }
+    // delete session doc
+    await window._fs.deleteDoc(window._fs.doc(window._db,"sessions",sid));
+    toast("🗑️ Session deleted. Firebase space freed.");
+    loadSessions();
+  }catch(e){ toast("Error deleting session. Check Firebase config."); }
+}
+
+// ── MODAL ──
+function maybeCloseModal(e){ if(e.target===document.getElementById("sess-modal")) closeModal(); }
+function closeModal(){ document.getElementById("sess-modal").classList.remove("open"); }
+
+// ── UTILS ──
+function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),3000);}
+</script>
+</body>
+</html>
