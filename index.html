@@ -3,434 +3,314 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Without Boundaries – Live Workshop</title>
+<title>AI Without Boundaries – Live Workshop | Dr. C V Krishnaveni</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<!-- ════════════════════════════════════════════════════════
-     FIREBASE CONFIG — Replace these 6 values with yours
-     from Firebase Console → Project Settings → Your Apps
-     ════════════════════════════════════════════════════════ -->
+<!-- Firebase Realtime Database -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, push, onValue }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { initializeApp }                         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, onValue, push, update }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
-  authDomain: "aai-drcvk-interactive-webapp.firebaseapp.com",
-  databaseURL: "https://aai-drcvk-interactive-webapp-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "aai-drcvk-interactive-webapp",
-  storageBucket: "aai-drcvk-interactive-webapp.firebasestorage.app",
-  messagingSenderId: "1008860491414",
-  appId: "1:1008860491414:web:fbfa1dbede3b7f6501dcb7"
-};
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCdlvqiZ60z3BZ8osjlmN-J3shMWl7Z6cM",
+    authDomain:        "aai-drcvk-interactive-webapp.firebaseapp.com",
+    databaseURL:       "https://aai-drcvk-interactive-webapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "aai-drcvk-interactive-webapp",
+    storageBucket:     "aai-drcvk-interactive-webapp.firebasestorage.app",
+    messagingSenderId: "1008860491414",
+    appId:             "1:1008860491414:web:fbfa1dbede3b7f6501dcb7"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
 
-window.db = db;
-window.fb = { ref, set, push, onValue };
+  window._db  = db;
+  window._ref = ref;
+  window._set = set;
+  window._get = get;
+  window._onValue = onValue;
+  window._update  = update;
+  window._firebaseReady = true;
+  document.dispatchEvent(new Event("firebase-ready"));
 </script>
+
 <style>
-/* ════════════════════════════════════════
-   COPYRIGHT © 2026 Dr. C V Krishnaveni
-   All rights reserved.
-   Lecturer in Computer Science,
-   SKR & SKR GCW(A), Kadapa
-   Unauthorised copying or redistribution
-   of this software is strictly prohibited.
-════════════════════════════════════════ */
+/* © 2026 Dr. C V Krishnaveni · SKR & SKR GCW(A), Kadapa · All rights reserved */
 :root{
-  --bg:#F4F7FF; --white:#FFFFFF; --text:#1A1A2E; --text2:#374151;
-  --muted:#6B7280; --border:#CBD5E1; --shadow:0 2px 12px rgba(0,0,0,.09);
-  --shadow-lg:0 6px 28px rgba(0,0,0,.13);
-  --blue:#1E40AF; --blue2:#2563EB; --blue-lt:#EFF6FF; --blue-mid:#BFDBFE;
-  --teal:#0891B2; --teal-lt:#E0F7FA;
-  --orange:#EA580C; --orange-lt:#FFF7ED;
-  --green:#16A34A; --green-lt:#F0FDF4;
-  --purple:#7C3AED; --purple-lt:#F5F3FF;
-  --red:#DC2626; --red-lt:#FEF2F2;
-  --gold:#D97706; --gold-lt:#FFFBEB;
-  --g1:#16A34A; --g1l:#F0FDF4;
-  --g2:#1E40AF; --g2l:#EFF6FF;
-  --g3:#7C3AED; --g3l:#F5F3FF;
-  --g4:#DC2626; --g4l:#FEF2F2;
-  --g5:#EA580C; --g5l:#FFF7ED;
-  --r:14px; --font:'Nunito',sans-serif; --serif:'Merriweather',serif;
+  --bg:#F4F7FF;--white:#FFFFFF;--text:#1A1A2E;--text2:#374151;
+  --muted:#6B7280;--border:#CBD5E1;
+  --shadow:0 2px 12px rgba(0,0,0,.09);--shadow-lg:0 6px 28px rgba(0,0,0,.13);
+  --blue:#1E40AF;--blue2:#2563EB;--blue-lt:#EFF6FF;--blue-mid:#BFDBFE;
+  --teal:#0891B2;--teal-lt:#E0F7FA;
+  --orange:#EA580C;--orange-lt:#FFF7ED;
+  --green:#16A34A;--green-lt:#F0FDF4;
+  --purple:#7C3AED;--purple-lt:#F5F3FF;
+  --red:#DC2626;--red-lt:#FEF2F2;
+  --gold:#D97706;--gold-lt:#FFFBEB;
+  --r:14px;--font:'Nunito',sans-serif;--serif:'Merriweather',serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6;overflow-x:hidden;}
 
-/* ── SCREENS ── */
+/* SCREENS */
 .screen{display:none;}
 .screen.active{display:block;}
-#scr-landing.active{display:flex;}
-#scr-nosession.active{display:flex;}
+#scr-landing.active,#scr-nosession.active{display:flex;}
 
-/* ════ LANDING ════ */
+/* LANDING */
 #scr-landing{
   min-height:100vh;flex-direction:column;align-items:center;
   background:linear-gradient(150deg,#EFF6FF 0%,#F4F7FF 55%,#E0F7FA 100%);
   padding:1.5rem 1rem 3rem;
 }
-.landing-wrap{width:100%;max-width:540px;}
+.land-wrap{width:100%;max-width:520px;}
 
-.resource-hero{
-  background:var(--white);border-radius:18px;border:2px solid var(--blue-mid);
-  padding:1.6rem 1.8rem;margin-bottom:1.2rem;box-shadow:var(--shadow-lg);
-  text-align:center;
-}
-.rh-avatar{
-  width:72px;height:72px;border-radius:50%;
-  background:linear-gradient(135deg,var(--blue2),var(--teal));
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.8rem;font-weight:900;color:white;margin:0 auto 0.8rem;
-  box-shadow:0 4px 16px rgba(37,99,235,.3);
-}
-.rh-role{font-size:.72rem;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;}
-.rh-name{font-family:var(--serif);font-size:1.25rem;color:var(--text);margin-bottom:2px;}
-.rh-dept{font-size:.85rem;color:var(--text2);font-weight:700;}
-.rh-college{font-size:.82rem;color:var(--blue2);font-weight:800;margin-top:4px;}
+.rp-card{background:var(--white);border-radius:18px;border:2px solid var(--blue-mid);padding:1.5rem 1.8rem;margin-bottom:1.1rem;box-shadow:var(--shadow-lg);text-align:center;animation:fadeUp .5s ease both;}
+.rp-av{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue2),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:900;color:white;margin:0 auto .8rem;box-shadow:0 4px 14px rgba(37,99,235,.3);}
+.rp-role{font-size:.7rem;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;}
+.rp-name{font-family:var(--serif);font-size:1.2rem;color:var(--text);margin-bottom:2px;}
+.rp-dept{font-size:.82rem;color:var(--text2);font-weight:700;}
+.rp-college{font-size:.8rem;color:var(--blue2);font-weight:800;margin-top:3px;}
 
-.session-info-box{
-  border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.2rem;
-  border:2px solid var(--blue-mid);background:var(--blue-lt);
-  text-align:center;
-}
-.sib-label{font-size:.72rem;font-weight:800;color:var(--blue2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
-.sib-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.4;margin-bottom:8px;}
-.sib-theme{font-size:.88rem;font-weight:700;color:var(--teal);font-style:italic;margin-bottom:8px;}
-.sib-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
-.chip{background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:4px 12px;font-size:.78rem;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:4px;}
+.sess-box{background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:14px;padding:1.1rem 1.4rem;margin-bottom:1.1rem;text-align:center;animation:fadeUp .5s .1s ease both;}
+.sb-label{font-size:.7rem;font-weight:800;color:var(--blue2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
+.sb-title{font-family:var(--serif);font-size:1.05rem;color:var(--text);line-height:1.4;margin-bottom:7px;}
+.sb-theme{font-size:.85rem;font-weight:700;color:var(--teal);font-style:italic;margin-bottom:8px;}
+.sb-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.chip{background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:4px 11px;font-size:.76rem;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:4px;}
 .chip.live{background:var(--red-lt);border-color:#FCA5A5;color:var(--red);}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite;}
+.ldot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite;}
 
-.join-card{
-  background:var(--white);border-radius:18px;border:2px solid var(--blue-mid);
-  padding:1.8rem;box-shadow:var(--shadow-lg);
-}
-.join-card h3{font-family:var(--serif);font-size:1.15rem;color:var(--blue);margin-bottom:1.2rem;text-align:center;}
-
-.ff{margin-bottom:.9rem;}
-.ff label{display:block;font-size:.8rem;font-weight:800;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
-.ff input,.ff select{
-  width:100%;border:2px solid var(--border);background:var(--bg);
-  color:var(--text);padding:12px 14px;border-radius:10px;
-  font-family:var(--font);font-size:1rem;font-weight:600;transition:border-color .2s;
-}
+.join-card{background:var(--white);border-radius:18px;border:2px solid var(--blue-mid);padding:1.8rem;box-shadow:var(--shadow-lg);animation:fadeUp .5s .2s ease both;}
+.join-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--blue);margin-bottom:1.1rem;text-align:center;}
+.ff{margin-bottom:.85rem;}
+.ff label{display:block;font-size:.78rem;font-weight:800;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+.ff input,.ff select{width:100%;border:2px solid var(--border);background:var(--bg);color:var(--text);padding:11px 13px;border-radius:9px;font-family:var(--font);font-size:.97rem;font-weight:600;transition:border-color .2s;}
 .ff input:focus,.ff select:focus{outline:none;border-color:var(--blue2);background:white;}
+.btn-join{width:100%;background:linear-gradient(135deg,var(--blue),var(--teal));color:white;border:none;padding:13px;border-radius:9px;cursor:pointer;font-family:var(--font);font-size:1rem;font-weight:800;box-shadow:0 4px 14px rgba(30,64,175,.3);transition:all .2s;margin-top:.3rem;}
+.btn-join:hover{transform:translateY(-2px);}
 
-.btn-join{
-  width:100%;background:linear-gradient(135deg,var(--blue),var(--teal));
-  color:white;border:none;padding:14px;border-radius:10px;cursor:pointer;
-  font-family:var(--font);font-size:1.05rem;font-weight:800;
-  box-shadow:0 4px 16px rgba(30,64,175,.3);transition:all .2s;margin-top:.4rem;
-}
-.btn-join:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(30,64,175,.4);}
-
-/* no session screen */
-#scr-nosession{
-  min-height:100vh;align-items:center;justify-content:center;
-  background:var(--bg);flex-direction:column;gap:1rem;padding:2rem;text-align:center;
-}
-#scr-nosession h2{font-family:var(--serif);color:var(--red);font-size:1.5rem;}
+/* NO SESSION */
+#scr-nosession{min-height:100vh;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;gap:.8rem;padding:2rem;text-align:center;}
+#scr-nosession h2{font-family:var(--serif);color:var(--red);font-size:1.4rem;}
 #scr-nosession p{color:var(--muted);font-weight:600;max-width:400px;}
 
-/* ════ TOP NAV ════ */
-.topnav{
-  position:sticky;top:0;z-index:100;background:var(--white);
-  border-bottom:2px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.08);
-  display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;
-}
-.nav-brand{font-family:var(--serif);font-size:.85rem;font-weight:700;color:var(--blue);white-space:nowrap;}
-.nav-tabs{display:flex;gap:3px;overflow-x:auto;flex:1;}
-.ntab{
-  background:none;border:2px solid transparent;color:var(--muted);
-  cursor:pointer;padding:6px 12px;border-radius:8px;
-  font-family:var(--font);font-size:.8rem;font-weight:700;white-space:nowrap;transition:all .2s;
-}
+/* TOP NAV */
+.topnav{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:2px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.07);display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;}
+.nb{font-family:var(--serif);font-size:.83rem;font-weight:700;color:var(--blue);white-space:nowrap;}
+.ntabs{display:flex;gap:3px;overflow-x:auto;flex:1;}
+.ntab{background:none;border:2px solid transparent;color:var(--muted);cursor:pointer;padding:6px 11px;border-radius:7px;font-family:var(--font);font-size:.78rem;font-weight:700;white-space:nowrap;transition:all .2s;}
 .ntab:hover{color:var(--blue2);background:var(--blue-lt);}
 .ntab.active{color:white;background:var(--blue2);border-color:var(--blue2);}
-.user-pill{
-  display:flex;align-items:center;gap:6px;background:var(--bg);
-  border:2px solid var(--border);padding:4px 12px;border-radius:100px;
-  font-size:.78rem;font-weight:700;color:var(--text2);white-space:nowrap;flex-shrink:0;
-}
+.upill{display:flex;align-items:center;gap:5px;background:var(--bg);border:2px solid var(--border);padding:4px 11px;border-radius:100px;font-size:.76rem;font-weight:700;color:var(--text2);white-space:nowrap;flex-shrink:0;}
 
-/* ════ SECTIONS ════ */
-.psec{display:none;padding:1.4rem;max-width:940px;margin:0 auto;}
+/* SECTIONS */
+.psec{display:none;padding:1.3rem;max-width:940px;margin:0 auto;}
 .psec.active{display:block;}
-.sec-head{margin-bottom:1.4rem;padding-bottom:.9rem;border-bottom:2px solid var(--border);}
-.sec-head h2{font-family:var(--serif);font-size:1.5rem;color:var(--text);}
-.sec-head p{font-size:.9rem;color:var(--muted);font-weight:600;margin-top:3px;}
+.sh{margin-bottom:1.3rem;padding-bottom:.8rem;border-bottom:2px solid var(--border);}
+.sh h2{font-family:var(--serif);font-size:1.45rem;color:var(--text);}
+.sh p{font-size:.88rem;color:var(--muted);font-weight:600;margin-top:2px;}
 
-/* ── STATS ── */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.9rem;margin-bottom:1.3rem;}
-.stat-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.1rem;text-align:center;box-shadow:var(--shadow);}
-.sc-icon{font-size:1.6rem;margin-bottom:5px;}
-.sc-val{font-size:1.8rem;font-weight:900;color:var(--blue);line-height:1;}
-.sc-lbl{font-size:.77rem;font-weight:700;color:var(--muted);margin-top:4px;}
+/* STATS */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.85rem;margin-bottom:1.2rem;}
+.sc{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center;box-shadow:var(--shadow);}
+.sc .si{font-size:1.5rem;margin-bottom:4px;}
+.sc .sv{font-size:1.75rem;font-weight:900;color:var(--blue);line-height:1;}
+.sc .sl{font-size:.76rem;font-weight:700;color:var(--muted);margin-top:3px;}
 
-/* ── SESSION BANNER ── */
-.sess-banner{
-  background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:12px;
-  padding:.9rem 1.3rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:1rem;
-}
-.sb-icon{font-size:1.8rem;flex-shrink:0;}
-.sb-name{font-weight:800;font-size:1rem;color:var(--blue);}
-.sb-meta{font-size:.8rem;color:var(--muted);font-weight:600;}
+/* SESSION BANNER */
+.sbann{background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:11px;padding:.85rem 1.2rem;margin-bottom:1.1rem;display:flex;align-items:center;gap:.9rem;}
+.sbann-icon{font-size:1.7rem;flex-shrink:0;}
+.sbann-name{font-weight:800;font-size:.97rem;color:var(--blue);}
+.sbann-meta{font-size:.78rem;color:var(--muted);font-weight:600;}
 
-/* ── FLOW ── */
-.flow-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.3rem;box-shadow:var(--shadow);}
-.flow-item{display:flex;align-items:center;gap:.9rem;padding:.65rem 0;border-bottom:1.5px solid var(--bg);}
-.flow-item:last-child{border-bottom:none;}
-.fi-icon{font-size:1.3rem;width:34px;text-align:center;flex-shrink:0;}
-.fi-label{flex:1;font-size:.9rem;font-weight:700;color:var(--text);}
-.fi-time{font-size:.77rem;font-weight:800;color:var(--blue2);background:var(--blue-lt);padding:3px 10px;border-radius:100px;white-space:nowrap;}
+/* FLOW */
+.flow-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.2rem;box-shadow:var(--shadow);}
+.fi{display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1.5px solid var(--bg);}
+.fi:last-child{border-bottom:none;}
+.fi-i{font-size:1.25rem;width:32px;text-align:center;flex-shrink:0;}
+.fi-l{flex:1;font-size:.88rem;font-weight:700;color:var(--text);}
+.fi-t{font-size:.75rem;font-weight:800;color:var(--blue2);background:var(--blue-lt);padding:2px 9px;border-radius:100px;white-space:nowrap;}
 
-/* ════ LABS ════ */
-.lab-tabs{display:flex;gap:7px;margin-bottom:1.2rem;flex-wrap:wrap;}
-.ltab{
-  background:var(--white);border:2px solid var(--border);color:var(--text2);
-  padding:7px 15px;border-radius:100px;cursor:pointer;font-family:var(--font);
-  font-size:.83rem;font-weight:700;transition:all .2s;
-}
+/* LABS */
+.ltabs{display:flex;gap:6px;margin-bottom:1.1rem;flex-wrap:wrap;}
+.ltab{background:var(--white);border:2px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:100px;cursor:pointer;font-family:var(--font);font-size:.81rem;font-weight:700;transition:all .2s;}
 .ltab:hover{border-color:var(--blue2);color:var(--blue2);}
 .ltab.active{background:var(--blue2);color:white;border-color:var(--blue2);}
 
-.lab-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.1rem;box-shadow:var(--shadow);}
-.lc-top{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.1rem;}
-.lc-emoji{font-size:2rem;flex-shrink:0;}
-.lc-top h3{font-size:1.1rem;font-weight:800;color:var(--text);}
-.lc-top p{font-size:.83rem;color:var(--muted);margin-top:2px;}
+.lcard{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem;box-shadow:var(--shadow);}
+.lc-top{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:1rem;}
+.lc-em{font-size:1.9rem;flex-shrink:0;}
+.lc-top h3{font-size:1.05rem;font-weight:800;color:var(--text);}
+.lc-top p{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.tool-row{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+.tlink{display:inline-flex;align-items:center;gap:5px;background:var(--teal-lt);border:2px solid var(--teal);color:var(--teal);padding:7px 13px;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:800;transition:all .2s;}
+.tlink:hover{background:var(--teal);color:white;}
+.qbtn{display:inline-flex;align-items:center;gap:5px;background:var(--gold-lt);border:2px solid var(--gold);color:var(--gold);padding:7px 12px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:800;transition:all .2s;}
+.qbtn:hover{background:var(--gold);color:white;}
 
-.tool-row{display:flex;align-items:center;gap:9px;margin-bottom:1.1rem;flex-wrap:wrap;}
-.tool-link{
-  display:inline-flex;align-items:center;gap:5px;
-  background:var(--teal-lt);border:2px solid var(--teal);color:var(--teal);
-  padding:8px 14px;border-radius:9px;text-decoration:none;
-  font-size:.85rem;font-weight:800;transition:all .2s;
-}
-.tool-link:hover{background:var(--teal);color:white;}
-.qr-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  background:var(--gold-lt);border:2px solid var(--gold);color:var(--gold);
-  padding:8px 13px;border-radius:9px;cursor:pointer;
-  font-family:var(--font);font-size:.85rem;font-weight:800;transition:all .2s;
-}
-.qr-btn:hover{background:var(--gold);color:white;}
+.slist{list-style:none;}
+.sitem{display:flex;align-items:flex-start;gap:9px;padding:9px 5px;border-bottom:1.5px solid var(--bg);cursor:pointer;border-radius:6px;transition:background .15s;}
+.sitem:hover{background:var(--bg);}
+.sitem:last-child{border-bottom:none;}
+.sck{width:23px;height:23px;border-radius:50%;border:2.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;transition:all .2s;margin-top:2px;color:white;}
+.sitem.done .sck{background:var(--green);border-color:var(--green);}
+.sitem.done .stxt{color:var(--muted);}
+.snum{min-width:21px;height:21px;border-radius:50%;background:var(--blue-lt);color:var(--blue2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0;margin-top:3px;}
+.stxt{font-size:.9rem;line-height:1.55;color:var(--text);font-weight:600;}
+.pwrap{position:relative;margin-top:6px;}
+.pbox{display:block;background:#FFFBEB;border:2px solid #FDE68A;border-radius:7px;padding:8px 75px 8px 10px;font-family:'Courier New',monospace;font-size:.78rem;color:#92400E;white-space:pre-wrap;line-height:1.5;}
+.cbtn{position:absolute;top:5px;right:5px;background:var(--orange);border:none;color:white;padding:4px 9px;border-radius:5px;font-size:.7rem;font-weight:800;cursor:pointer;font-family:var(--font);transition:all .2s;}
+.cbtn:hover{background:#C2410C;}
+.cbtn.copied{background:var(--green);}
+.sex{display:block;margin-top:4px;font-size:.8rem;color:var(--teal);font-weight:700;font-style:italic;}
 
-.steps-list{list-style:none;}
-.step-item{
-  display:flex;align-items:flex-start;gap:10px;padding:10px 6px;
-  border-bottom:1.5px solid var(--bg);cursor:pointer;border-radius:7px;transition:background .15s;
-}
-.step-item:hover{background:var(--bg);}
-.step-item:last-child{border-bottom:none;}
-.step-check{
-  width:24px;height:24px;border-radius:50%;border:2.5px solid var(--border);
-  flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;font-weight:900;transition:all .2s;margin-top:2px;color:white;
-}
-.step-item.done .step-check{background:var(--green);border-color:var(--green);}
-.step-item.done .step-text{color:var(--muted);}
-.step-num{
-  min-width:22px;height:22px;border-radius:50%;background:var(--blue-lt);
-  color:var(--blue2);display:flex;align-items:center;justify-content:center;
-  font-size:.72rem;font-weight:800;flex-shrink:0;margin-top:3px;
-}
-.step-text{font-size:.93rem;line-height:1.55;color:var(--text);font-weight:600;}
-.prompt-wrap{position:relative;margin-top:7px;}
-.prompt-box{
-  display:block;background:#FFFBEB;border:2px solid #FDE68A;
-  border-radius:8px;padding:9px 78px 9px 11px;
-  font-family:'Courier New',monospace;font-size:.8rem;color:#92400E;
-  white-space:pre-wrap;line-height:1.5;
-}
-.copy-btn{
-  position:absolute;top:6px;right:6px;background:var(--orange);
-  border:none;color:white;padding:5px 10px;border-radius:6px;
-  font-size:.73rem;font-weight:800;cursor:pointer;transition:all .2s;font-family:var(--font);
-}
-.copy-btn:hover{background:#C2410C;}
-.copy-btn.copied{background:var(--green);}
-.step-extra{display:block;margin-top:5px;font-size:.83rem;color:var(--teal);font-weight:700;font-style:italic;}
+.prog-r{margin-top:.8rem;}
+.prog-r .pl{display:flex;justify-content:space-between;font-size:.76rem;font-weight:700;color:var(--muted);margin-bottom:4px;}
+.ptrack{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--green),#22C55E);border-radius:4px;transition:width .4s ease;}
+.outbox{background:var(--teal-lt);border:2px solid var(--teal);border-radius:8px;padding:8px 12px;margin-top:.8rem;font-size:.86rem;font-weight:700;color:var(--teal);}
 
-.prog-row{margin-top:.9rem;}
-.prog-labels{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:5px;}
-.prog-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--green),#22C55E);border-radius:4px;transition:width .4s ease;}
-.outcome-box{background:var(--teal-lt);border:2px solid var(--teal);border-radius:9px;padding:9px 13px;margin-top:.9rem;font-size:.88rem;font-weight:700;color:var(--teal);}
+/* CHALLENGE */
+.scbann{background:linear-gradient(135deg,var(--blue-lt),var(--teal-lt));border:2px solid var(--blue-mid);border-radius:var(--r);padding:1.2rem 1.6rem;margin-bottom:1.3rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;box-shadow:var(--shadow);flex-wrap:wrap;}
+.scbig{font-family:var(--serif);font-size:2rem;font-weight:900;color:var(--blue);}
+.scr{text-align:right;}
+.scr strong{font-size:1.05rem;font-weight:800;color:var(--text);}
 
-/* ════ CHALLENGE ════ */
-.score-banner{
-  background:linear-gradient(135deg,var(--blue-lt),var(--teal-lt));
-  border:2px solid var(--blue-mid);border-radius:var(--r);
-  padding:1.3rem 1.7rem;margin-bottom:1.4rem;
-  display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  box-shadow:var(--shadow);flex-wrap:wrap;
-}
-.sb-big{font-family:var(--serif);font-size:2.2rem;font-weight:900;color:var(--blue);}
-.sb-lbl{font-size:.88rem;color:var(--muted);font-weight:600;}
-.sb-right{text-align:right;}
-.sb-right strong{font-size:1.1rem;font-weight:800;color:var(--text);}
+.ccard{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:.85rem;box-shadow:var(--shadow);display:flex;gap:.85rem;align-items:flex-start;transition:border-color .2s;}
+.ccard.done{border-color:var(--green);background:var(--green-lt);}
+.cbadge{width:42px;height:42px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:900;color:white;}
+.cbody{flex:1;}
+.cbody h4{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:3px;}
+.cbody p{font-size:.84rem;color:var(--text2);font-weight:600;line-height:1.5;}
+.csub{display:flex;gap:6px;margin-top:8px;}
+.cinp{flex:1;border:2px solid var(--border);background:var(--bg);color:var(--text);padding:8px 10px;border-radius:7px;font-family:var(--font);font-size:.86rem;font-weight:600;}
+.cinp:focus{outline:none;border-color:var(--blue2);background:white;}
+.bsub{background:var(--orange);color:white;border:none;padding:8px 14px;border-radius:7px;cursor:pointer;font-family:var(--font);font-size:.84rem;font-weight:800;transition:all .2s;white-space:nowrap;}
+.bsub:hover{background:#C2410C;}
+.bsub:disabled{background:#D1D5DB;cursor:not-allowed;}
+.cpts{font-size:1rem;font-weight:900;color:var(--gold);white-space:nowrap;text-align:right;line-height:1.4;}
+.cok{font-size:.8rem;font-weight:700;color:var(--green);margin-top:4px;display:none;}
+.ccard.done .cok{display:block;}
 
-.ch-card{
-  background:var(--white);border:2px solid var(--border);border-radius:var(--r);
-  padding:1.3rem;margin-bottom:.9rem;box-shadow:var(--shadow);
-  display:flex;gap:.9rem;align-items:flex-start;transition:border-color .2s;
-}
-.ch-card.done{border-color:var(--green);background:var(--green-lt);}
-.ch-badge{width:44px;height:44px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:white;}
-.ch-body{flex:1;}
-.ch-body h4{font-size:.98rem;font-weight:800;color:var(--text);margin-bottom:3px;}
-.ch-body p{font-size:.86rem;color:var(--text2);font-weight:600;line-height:1.5;}
-.ch-sub{display:flex;gap:7px;margin-top:9px;}
-.ch-inp{flex:1;border:2px solid var(--border);background:var(--bg);color:var(--text);padding:8px 11px;border-radius:8px;font-family:var(--font);font-size:.88rem;font-weight:600;}
-.ch-inp:focus{outline:none;border-color:var(--blue2);background:white;}
-.btn-sub{background:var(--orange);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.86rem;font-weight:800;transition:all .2s;white-space:nowrap;}
-.btn-sub:hover{background:#C2410C;}
-.btn-sub:disabled{background:#D1D5DB;cursor:not-allowed;}
-.ch-pts{font-size:1.05rem;font-weight:900;color:var(--gold);white-space:nowrap;text-align:right;line-height:1.4;}
-.ch-ok{font-size:.83rem;font-weight:700;color:var(--green);margin-top:5px;display:none;}
-.ch-card.done .ch-ok{display:block;}
+/* QUIZ */
+.qhero{background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:var(--r);padding:1.6rem;text-align:center;color:white;margin-bottom:1.3rem;box-shadow:0 6px 24px rgba(30,64,175,.3);}
+.qhero h3{font-family:var(--serif);font-size:1.35rem;margin-bottom:.4rem;}
+.qhero p{font-size:.88rem;opacity:.9;font-weight:600;}
+.qcard{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:1rem;box-shadow:var(--shadow);}
+.qnum{font-size:.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;}
+.qtxt{font-size:.98rem;font-weight:800;color:var(--text);margin-bottom:.9rem;line-height:1.5;}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.qopt{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:9px 12px;cursor:pointer;font-family:var(--font);font-size:.86rem;font-weight:700;color:var(--text);text-align:left;transition:all .2s;line-height:1.4;}
+.qopt:hover:not(.dis){border-color:var(--blue2);background:var(--blue-lt);color:var(--blue);}
+.qopt.correct{background:var(--green-lt);border-color:var(--green);color:var(--green);}
+.qopt.wrong{background:var(--red-lt);border-color:var(--red);color:var(--red);}
+.qopt.dis{pointer-events:none;}
+.qfb{margin-top:8px;padding:8px 12px;border-radius:7px;font-size:.86rem;font-weight:700;display:none;}
+.qfb.show{display:block;}
+.qfb.ok{background:var(--green-lt);color:var(--green);border:1.5px solid var(--green);}
+.qfb.no{background:var(--red-lt);color:var(--red);border:1.5px solid var(--red);}
 
-/* ════ QUIZ ════ */
-.quiz-hero{
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  border-radius:var(--r);padding:1.7rem;text-align:center;
-  color:white;margin-bottom:1.4rem;box-shadow:0 6px 24px rgba(30,64,175,.3);
-}
-.quiz-hero h3{font-family:var(--serif);font-size:1.4rem;margin-bottom:.4rem;}
-.quiz-hero p{font-size:.9rem;opacity:.9;font-weight:600;}
-.q-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1.1rem;box-shadow:var(--shadow);}
-.q-num{font-size:.77rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;}
-.q-text{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:1rem;line-height:1.5;}
-.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.q-opt{
-  background:var(--bg);border:2px solid var(--border);border-radius:9px;
-  padding:10px 13px;cursor:pointer;font-family:var(--font);font-size:.88rem;
-  font-weight:700;color:var(--text);text-align:left;transition:all .2s;line-height:1.4;
-}
-.q-opt:hover:not(.dis){border-color:var(--blue2);background:var(--blue-lt);color:var(--blue);}
-.q-opt.correct{background:var(--green-lt);border-color:var(--green);color:var(--green);}
-.q-opt.wrong{background:var(--red-lt);border-color:var(--red);color:var(--red);}
-.q-opt.dis{pointer-events:none;}
-.q-opt.correct.dis{opacity:1;}
-.q-fb{margin-top:9px;padding:9px 13px;border-radius:8px;font-size:.88rem;font-weight:700;display:none;}
-.q-fb.show{display:block;}
-.q-fb.ok{background:var(--green-lt);color:var(--green);border:1.5px solid var(--green);}
-.q-fb.no{background:var(--red-lt);color:var(--red);border:1.5px solid var(--red);}
-.quiz-result{background:var(--white);border:2px solid var(--blue-mid);border-radius:var(--r);padding:1.8rem;text-align:center;box-shadow:var(--shadow-lg);margin-top:1.4rem;display:none;}
+/* LEADERBOARD */
+.livebadge{display:inline-flex;align-items:center;gap:5px;background:var(--red-lt);border:2px solid #FCA5A5;color:var(--red);padding:4px 12px;border-radius:100px;font-size:.78rem;font-weight:800;margin-bottom:.9rem;}
+.aibox{background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:10px;padding:10px 14px;margin-bottom:.9rem;font-size:.9rem;font-weight:700;color:var(--blue);min-height:42px;}
+.rbtn{background:var(--white);border:2px solid var(--blue2);color:var(--blue2);padding:7px 16px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.84rem;font-weight:800;margin-bottom:.9rem;transition:all .2s;}
+.rbtn:hover{background:var(--blue2);color:white;}
+.lbrow{display:flex;align-items:center;gap:10px;background:var(--white);border:2px solid var(--border);border-radius:11px;padding:.8rem 1rem;margin-bottom:6px;box-shadow:var(--shadow);}
+.lbrow.me{border-color:var(--blue2);background:var(--blue-lt);}
+.lbrank{font-size:1rem;font-weight:900;min-width:28px;text-align:center;}
+.lbav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.lbname{flex:1;font-weight:800;font-size:.9rem;color:var(--text);}
+.lbyou{font-size:.67rem;font-weight:800;color:var(--blue2);background:var(--blue-lt);border:1px solid var(--blue-mid);padding:1px 6px;border-radius:4px;margin-left:4px;}
+.lbgrp{font-size:.71rem;font-weight:800;padding:2px 8px;border-radius:100px;white-space:nowrap;}
+.lbsc{font-size:1rem;font-weight:900;color:var(--orange);min-width:52px;text-align:right;}
 
-/* ════ LEADERBOARD ════ */
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red-lt);border:2px solid #FCA5A5;color:var(--red);padding:5px 13px;border-radius:100px;font-size:.8rem;font-weight:800;margin-bottom:1rem;}
-.ai-box{background:var(--blue-lt);border:2px solid var(--blue-mid);border-radius:11px;padding:11px 15px;margin-bottom:1rem;font-size:.93rem;font-weight:700;color:var(--blue);min-height:44px;}
-.refresh-btn{background:var(--white);border:2px solid var(--blue2);color:var(--blue2);padding:8px 17px;border-radius:9px;cursor:pointer;font-family:var(--font);font-size:.86rem;font-weight:800;margin-bottom:1rem;transition:all .2s;}
-.refresh-btn:hover{background:var(--blue2);color:white;}
-.lb-row{display:flex;align-items:center;gap:11px;background:var(--white);border:2px solid var(--border);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:7px;box-shadow:var(--shadow);transition:all .2s;}
-.lb-row.me{border-color:var(--blue2);background:var(--blue-lt);}
-.lb-rank{font-size:1.05rem;font-weight:900;min-width:30px;text-align:center;}
-.lb-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-.lb-name{flex:1;font-weight:800;font-size:.92rem;color:var(--text);}
-.lb-you{font-size:.68rem;font-weight:800;color:var(--blue2);background:var(--blue-lt);border:1px solid var(--blue-mid);padding:2px 6px;border-radius:4px;margin-left:5px;}
-.lb-grp{font-size:.73rem;font-weight:800;padding:2px 8px;border-radius:100px;white-space:nowrap;}
-.lb-score{font-size:1.05rem;font-weight:900;color:var(--orange);min-width:56px;text-align:right;}
+/* RESOURCES */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;}
+.rcard{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1rem;text-decoration:none;color:var(--text);transition:all .2s;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+.rcard:hover{border-color:var(--blue2);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.rc-i{font-size:1.6rem;margin-bottom:4px;}
+.rc-g{display:inline-block;font-size:.69rem;font-weight:800;padding:2px 7px;border-radius:100px;margin-bottom:5px;}
+.rc-n{font-size:.93rem;font-weight:800;margin-bottom:3px;}
+.rc-d{font-size:.79rem;color:var(--muted);font-weight:600;flex:1;}
+.rc-u{font-size:.71rem;color:var(--teal);font-weight:700;margin-top:6px;word-break:break-all;}
+.rc-q{display:inline-flex;align-items:center;gap:4px;margin-top:8px;background:var(--gold-lt);border:1.5px solid var(--gold);color:var(--gold);padding:4px 9px;border-radius:5px;font-size:.74rem;font-weight:800;cursor:pointer;transition:all .2s;}
+.rc-q:hover{background:var(--gold);color:white;}
 
-/* ════ RESOURCES ════ */
-.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.9rem;}
-.res-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:1.1rem;text-decoration:none;color:var(--text);transition:all .2s;box-shadow:var(--shadow);display:flex;flex-direction:column;}
-.res-card:hover{border-color:var(--blue2);transform:translateY(-2px);box-shadow:var(--shadow-lg);}
-.rc-icon{font-size:1.7rem;margin-bottom:5px;}
-.rc-grp{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:100px;margin-bottom:6px;}
-.rc-name{font-size:.95rem;font-weight:800;margin-bottom:3px;}
-.rc-desc{font-size:.8rem;color:var(--muted);font-weight:600;flex:1;}
-.rc-url{font-size:.73rem;color:var(--teal);font-weight:700;margin-top:7px;word-break:break-all;}
-.rc-qr{display:inline-flex;align-items:center;gap:4px;margin-top:9px;background:var(--gold-lt);border:1.5px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:6px;font-size:.76rem;font-weight:800;cursor:pointer;transition:all .2s;}
-.rc-qr:hover{background:var(--gold);color:white;}
+/* QR MODAL */
+.qro{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s;}
+.qro.open{opacity:1;pointer-events:all;}
+.qrm{background:var(--white);border-radius:18px;padding:1.8rem;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22);transform:scale(.9);transition:transform .25s;}
+.qro.open .qrm{transform:scale(1);}
+.qrm h3{font-family:var(--serif);font-size:1.05rem;color:var(--text);margin-bottom:3px;}
+.qrm p{font-size:.79rem;color:var(--muted);font-weight:600;margin-bottom:1rem;}
+#qrwrap{background:white;border:3px solid var(--border);border-radius:10px;display:inline-block;padding:10px;margin-bottom:.8rem;}
+.qrurl{font-size:.71rem;color:var(--teal);font-weight:700;word-break:break-all;margin-bottom:1rem;}
+.bclose{background:var(--blue2);color:white;border:none;padding:9px 24px;border-radius:8px;cursor:pointer;font-family:var(--font);font-size:.9rem;font-weight:800;}
 
-/* ════ QR MODAL ════ */
-.qr-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s;}
-.qr-overlay.open{opacity:1;pointer-events:all;}
-.qr-modal{background:var(--white);border-radius:20px;padding:2rem;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.22);transform:scale(.9);transition:transform .25s;}
-.qr-overlay.open .qr-modal{transform:scale(1);}
-.qr-modal h3{font-family:var(--serif);font-size:1.1rem;color:var(--text);margin-bottom:3px;}
-.qr-modal p{font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:1.1rem;}
-#qr-wrap{background:white;border:3px solid var(--border);border-radius:11px;display:inline-block;padding:11px;margin-bottom:.9rem;}
-.qr-urltext{font-size:.73rem;color:var(--teal);font-weight:700;word-break:break-all;margin-bottom:1.1rem;}
-.btn-close{background:var(--blue2);color:white;border:none;padding:10px 26px;border-radius:9px;cursor:pointer;font-family:var(--font);font-size:.93rem;font-weight:800;}
-
-/* ════ TOAST ════ */
-.toast{position:fixed;bottom:1.4rem;right:1.4rem;z-index:999;background:var(--text);color:white;padding:11px 18px;border-radius:10px;font-size:.88rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:270px;box-shadow:var(--shadow-lg);}
+/* TOAST */
+.toast{position:fixed;bottom:1.3rem;right:1.3rem;z-index:999;background:var(--text);color:white;padding:10px 16px;border-radius:9px;font-size:.86rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;max-width:260px;box-shadow:var(--shadow-lg);}
 .toast.show{opacity:1;}
 
-/* ════ FOOTER ════ */
-.copyright-footer{
-  text-align:center;padding:1.5rem 1rem;margin-top:2rem;
-  border-top:2px solid var(--border);background:var(--white);
-  font-size:.75rem;color:var(--muted);font-weight:600;line-height:1.8;
-}
-.copyright-footer strong{color:var(--blue2);}
+/* FOOTER */
+.foot{text-align:center;padding:1.3rem 1rem;border-top:2px solid var(--border);background:var(--white);font-size:.72rem;color:var(--muted);font-weight:600;line-height:1.8;margin-top:1.5rem;}
+.foot strong{color:var(--blue2);}
 
-/* ════ ANIMATIONS ════ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-@keyframes slideIn{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
-.anim{animation:slideIn .3s ease;}
-.fade-up{animation:fadeUp .6s ease both;}
+@keyframes slideIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:none;}}
+.ain{animation:slideIn .3s ease;}
 
-@media(max-width:600px){
-  .nav-tabs .ntab{padding:6px 9px;font-size:.76rem;}
-  .user-pill{display:none;}
-  .psec{padding:.9rem;}
-  .q-opts{grid-template-columns:1fr;}
-  .score-banner{flex-direction:column;}
+@media(max-width:580px){
+  .ntab{padding:5px 8px;font-size:.73rem;}
+  .upill{display:none;}
+  .psec{padding:.85rem;}
+  .qopts{grid-template-columns:1fr;}
+  .scbann{flex-direction:column;}
 }
-::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 </style>
 </head>
 <body>
 
-<!-- ════════════════ NO SESSION SCREEN ════════════════ -->
+<!-- NO SESSION -->
 <div id="scr-nosession" class="screen">
-  <div>
+  <div style="text-align:center;">
     <div style="font-size:3rem;margin-bottom:.8rem;">⚠️</div>
     <h2>No Active Session</h2>
-    <p>This workshop link does not have a session code. Please ask your resource person for the correct link.</p>
-    <p style="margin-top:.8rem;font-size:.82rem;">Contact: <strong>Dr. C V Krishnaveni</strong> · SKR &amp; SKR GCW(A), Kadapa</p>
+    <p>This link has no session code. Please ask Dr. C V Krishnaveni for the correct workshop link.</p>
+    <p style="margin-top:.7rem;font-size:.8rem;color:var(--muted);font-weight:700;">SKR &amp; SKR GCW(A), Kadapa</p>
   </div>
 </div>
 
-<!-- ════════════════ LANDING SCREEN ════════════════ -->
+<!-- LANDING -->
 <div id="scr-landing" class="screen">
-  <div class="landing-wrap">
+  <div class="land-wrap">
 
-    <!-- Resource Person Card -->
-    <div class="resource-hero fade-up">
-      <div class="rh-avatar">VK</div>
-      <div class="rh-role">Resource Person</div>
-      <div class="rh-name">Dr. C V Krishnaveni</div>
-      <div class="rh-dept">Lecturer in Computer Science</div>
-      <div class="rh-college">SKR &amp; SKR Government College for Women (Autonomous), Kadapa</div>
+    <div class="rp-card">
+      <div class="rp-av">VK</div>
+      <div class="rp-role">Resource Person</div>
+      <div class="rp-name">Dr. C V Krishnaveni</div>
+      <div class="rp-dept">Lecturer in Computer Science</div>
+      <div class="rp-college">SKR &amp; SKR Government College for Women (Autonomous), Kadapa</div>
     </div>
 
-    <!-- Session Info (filled dynamically) -->
-    <div class="session-info-box fade-up" id="session-info-box">
-      <div class="sib-label">🌐 International Webinar · Live Workshop</div>
-      <div class="sib-title" id="sib-title">AI, Machine Learning &amp; Deep Learning:<br>A Beginner's Guide for Undergraduate Students</div>
-      <div class="sib-theme">"Artificial Intelligence Without Boundaries: Practical Insights Across Disciplines"</div>
-      <div class="sib-chips" id="sib-chips">
+    <div class="sess-box">
+      <div class="sb-label">🌐 International Webinar · Live Workshop</div>
+      <div class="sb-title" id="sb-title">AI, Machine Learning &amp; Deep Learning:<br>A Beginner's Guide for Undergraduate Students</div>
+      <div class="sb-theme">"Artificial Intelligence Without Boundaries: Practical Insights Across Disciplines"</div>
+      <div class="sb-chips">
         <span class="chip">📅 <span id="chip-date">—</span></span>
         <span class="chip">🏛️ <span id="chip-college">—</span></span>
-        <span class="chip live"><span class="live-dot"></span> LIVE NOW</span>
+        <span class="chip live"><span class="ldot"></span> LIVE NOW</span>
       </div>
     </div>
 
-    <!-- Join Form -->
-    <div class="join-card fade-up">
+    <div class="join-card">
       <h3>✋ Join the Workshop</h3>
       <div class="ff">
         <label>Your Full Name</label>
@@ -453,12 +333,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16
   </div>
 </div>
 
-<!-- ════════════════ MAIN WORKSHOP ════════════════ -->
+<!-- MAIN WORKSHOP -->
 <div id="scr-main" class="screen">
 
   <nav class="topnav">
-    <div class="nav-brand">⚡ AI Without Boundaries</div>
-    <div class="nav-tabs">
+    <div class="nb">⚡ AI Without Boundaries</div>
+    <div class="ntabs">
       <button class="ntab active" onclick="goSec('home',this)">🏠 Home</button>
       <button class="ntab"        onclick="goSec('labs',this)">🧪 Labs</button>
       <button class="ntab"        onclick="goSec('challenge',this)">🏆 Challenge</button>
@@ -466,113 +346,96 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16
       <button class="ntab"        onclick="goSec('leaderboard',this)">📊 Board</button>
       <button class="ntab"        onclick="goSec('resources',this)">🔗 Tools</button>
     </div>
-    <div class="user-pill">👤 <span id="pill-name">You</span></div>
+    <div class="upill">👤 <span id="pill-name">You</span></div>
   </nav>
 
   <!-- HOME -->
   <div class="psec active" id="sec-home">
-    <div class="sec-head">
-      <h2 id="welcome-h">Welcome! 👋</h2>
-      <p>Your personalised workshop dashboard</p>
-    </div>
-    <div class="sess-banner" id="home-sess-banner">
-      <div class="sb-icon">🏛️</div>
-      <div><div class="sb-name" id="home-sess-name">—</div><div class="sb-meta" id="home-sess-meta">—</div></div>
-    </div>
+    <div class="sh"><h2 id="welcome-h">Welcome! 👋</h2><p>Your personalised workshop dashboard</p></div>
+    <div class="sbann"><div class="sbann-icon">🏛️</div><div><div class="sbann-name" id="home-sname">—</div><div class="sbann-meta" id="home-smeta">—</div></div></div>
     <div class="stat-row">
-      <div class="stat-card"><div class="sc-icon">🧪</div><div class="sc-val" id="st-labs">—</div><div class="sc-lbl">Your Labs</div></div>
-      <div class="stat-card"><div class="sc-icon">✅</div><div class="sc-val" id="st-steps">0</div><div class="sc-lbl">Steps Done</div></div>
-      <div class="stat-card"><div class="sc-icon">🏆</div><div class="sc-val" id="st-score">0</div><div class="sc-lbl">Points</div></div>
-      <div class="stat-card"><div class="sc-icon">👥</div><div class="sc-val" id="st-people">—</div><div class="sc-lbl">Live Students</div></div>
+      <div class="sc"><div class="si">🧪</div><div class="sv" id="st-labs">—</div><div class="sl">Your Labs</div></div>
+      <div class="sc"><div class="si">✅</div><div class="sv" id="st-steps">0</div><div class="sl">Steps Done</div></div>
+      <div class="sc"><div class="si">🏆</div><div class="sv" id="st-score">0</div><div class="sl">Points</div></div>
+      <div class="sc"><div class="si">👥</div><div class="sv" id="st-people">—</div><div class="sl">Live Students</div></div>
     </div>
     <div class="flow-card">
-      <h3 style="font-family:var(--serif);font-size:1rem;margin-bottom:.9rem;color:var(--blue);">📅 Session Flow – 90 Minutes</h3>
+      <h3 style="font-family:var(--serif);font-size:.98rem;margin-bottom:.8rem;color:var(--blue);">📅 Session Flow – 90 Minutes</h3>
       <div id="flow-slot"></div>
     </div>
   </div>
 
   <!-- LABS -->
   <div class="psec" id="sec-labs">
-    <div class="sec-head"><h2>🧪 Hands-On Labs</h2><p>Tap each step to mark it done · Your group loads first · All links open on mobile</p></div>
-    <div class="lab-tabs" id="lab-tabs"></div>
-    <div id="lab-panels"></div>
+    <div class="sh"><h2>🧪 Hands-On Labs</h2><p>Tap each step to mark done · Your group loads first</p></div>
+    <div class="ltabs" id="ltabs"></div>
+    <div id="lpanels"></div>
   </div>
 
   <!-- CHALLENGE -->
   <div class="psec" id="sec-challenge">
-    <div class="sec-head"><h2>🏆 Grand Challenge</h2><p>Use only your phone · Complete tasks · Submit what you found · Earn points!</p></div>
-    <div class="score-banner">
-      <div><div class="sb-big" id="ch-score">0 pts</div><div class="sb-lbl">Your challenge score</div></div>
-      <div class="sb-right"><strong id="ch-count">0 / 6</strong><div class="sb-lbl">completed · Max 65 pts</div></div>
+    <div class="sh"><h2>🏆 Grand Challenge</h2><p>Use only your phone · Submit what you found · Earn points!</p></div>
+    <div class="scbann">
+      <div><div class="scbig" id="ch-score">0 pts</div><div style="font-size:.86rem;color:var(--muted);font-weight:600;">Your challenge score</div></div>
+      <div class="scr"><strong id="ch-count">0 / 6</strong><div style="font-size:.84rem;color:var(--muted);font-weight:600;">completed · Max 65 pts</div></div>
     </div>
-    <div id="ch-list"></div>
+    <div id="clist"></div>
   </div>
 
   <!-- QUIZ -->
   <div class="psec" id="sec-quiz">
-    <div class="sec-head"><h2>🧠 AI Knowledge Quiz</h2><p>10 questions · All disciplines · +5 points per correct answer</p></div>
-    <div class="quiz-hero">
-      <h3>Test What You've Learned! 🚀</h3>
-      <p>Questions cover all 5 discipline groups from today's hands-on labs.</p>
-    </div>
-    <div id="quiz-slot"></div>
+    <div class="sh"><h2>🧠 AI Knowledge Quiz</h2><p>10 questions · All disciplines · +5 points per correct answer</p></div>
+    <div class="qhero"><h3>Test What You've Learned! 🚀</h3><p>Questions cover all 5 discipline groups from today's labs.</p></div>
+    <div id="qslot"></div>
   </div>
 
   <!-- LEADERBOARD -->
   <div class="psec" id="sec-leaderboard">
-    <div class="sec-head"><h2>📊 Live Leaderboard</h2><p>Real-time scores from all participants · Auto-refreshes every 15 seconds</p></div>
-    <div class="live-badge"><span class="live-dot"></span> LIVE · Auto-updating</div>
-    <div class="ai-box" id="ai-box">🤖 Click "AI Commentary" to get a live analysis of the leaderboard…</div>
-    <button class="refresh-btn" onclick="doRefresh()">🔄 Refresh + AI Commentary</button>
-    <div id="lb-list"></div>
+    <div class="sh"><h2>📊 Live Leaderboard</h2><p>Real-time scores · Updates live as students complete steps</p></div>
+    <div class="livebadge"><span class="ldot"></span> LIVE · Real-time Firebase updates</div>
+    <div class="aibox" id="aibox">🤖 Click "AI Commentary" to get a live analysis…</div>
+    <button class="rbtn" onclick="doRefresh()">🔄 Refresh + AI Commentary</button>
+    <div id="lbwrap"></div>
   </div>
 
   <!-- RESOURCES -->
   <div class="psec" id="sec-resources">
-    <div class="sec-head"><h2>🔗 All Free Tools</h2><p>Tap any card to open · Tap "📱 Scan QR" to get the QR code</p></div>
-    <div class="res-grid" id="res-grid"></div>
+    <div class="sh"><h2>🔗 All Free Tools</h2><p>Tap any card to open · Tap "📱 QR" for the QR code</p></div>
+    <div class="rgrid" id="rgrid"></div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="copyright-footer">
+  <footer class="foot">
     <strong>© 2026 Dr. C V Krishnaveni</strong> · Lecturer in Computer Science, SKR &amp; SKR GCW(A), Kadapa<br>
     "AI Without Boundaries" Workshop Platform · All rights reserved.<br>
-    Unauthorised copying, redistribution or commercial use of this platform is strictly prohibited.<br>
-    Designed for educational use in international academic workshops.
+    Unauthorised copying or redistribution is strictly prohibited.
   </footer>
-
 </div>
 
 <!-- QR MODAL -->
-<div class="qr-overlay" id="qr-overlay" onclick="maybeClose(event)">
-  <div class="qr-modal">
-    <h3 id="qr-tname">Tool</h3>
-    <p>Point your phone camera at the QR code to open instantly</p>
-    <div id="qr-wrap"></div>
-    <div class="qr-urltext" id="qr-urltext"></div>
-    <button class="btn-close" onclick="closeQR()">✕ Close</button>
+<div class="qro" id="qro" onclick="mqClose(event)">
+  <div class="qrm">
+    <h3 id="qr-name">Tool</h3>
+    <p>Point your phone camera at this QR code</p>
+    <div id="qrwrap"></div>
+    <div class="qrurl" id="qr-url"></div>
+    <button class="bclose" onclick="closeQR()">✕ Close</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-// COPYRIGHT © 2026 Dr. C V Krishnaveni
-// Lecturer in Computer Science, SKR & SKR GCW(A), Kadapa
-// All rights reserved. Educational use only.
-// ══════════════════════════════════════════════════════════
+// © 2026 Dr. C V Krishnaveni — All rights reserved
 
-// ── GROUPS ──
-const GRP = {
-  life:      {name:"Life Sciences",    emoji:"🌿",c:"#16A34A",lt:"#F0FDF4"},
-  commerce:  {name:"Commerce",         emoji:"🛒",c:"#1E40AF",lt:"#EFF6FF"},
-  humanities:{name:"Humanities",       emoji:"📖",c:"#7C3AED",lt:"#F5F3FF"},
-  math:      {name:"Math & Sciences",  emoji:"⚛️",c:"#DC2626",lt:"#FEF2F2"},
-  cs:        {name:"Computer Science", emoji:"💻",c:"#EA580C",lt:"#FFF7ED"},
+// ── DATA ──
+const GRP={
+  life:     {name:"Life Sciences",   emoji:"🌿",c:"#16A34A",lt:"#F0FDF4"},
+  commerce: {name:"Commerce",        emoji:"🛒",c:"#1E40AF",lt:"#EFF6FF"},
+  humanities:{name:"Humanities",     emoji:"📖",c:"#7C3AED",lt:"#F5F3FF"},
+  math:     {name:"Math & Sciences", emoji:"⚛️",c:"#DC2626",lt:"#FEF2F2"},
+  cs:       {name:"Computer Science",emoji:"💻",c:"#EA580C",lt:"#FFF7ED"},
 };
 
-// ── FLOW ──
 const FLOW=[
   {i:"🚀",l:"Welcome & Why Mobile-First AI Labs?",t:"0–10 min"},
   {i:"📱",l:"Tool Tour – Open your phone and try now",t:"10–20 min"},
@@ -580,255 +443,234 @@ const FLOW=[
   {i:"📖",l:"Humanities & Social Sciences – Hands-On",t:"35–50 min"},
   {i:"⚛️",l:"Math & Physical Sciences – Hands-On",t:"50–65 min"},
   {i:"💻",l:"Computer Science – Vibe Coding",t:"65–80 min"},
-  {i:"🏆",l:"Grand Challenge + Quiz + Leaderboard + Wrap-Up",t:"80–90 min"},
+  {i:"🏆",l:"Challenge + Quiz + Leaderboard + Wrap-Up",t:"80–90 min"},
 ];
 
-// ── LABS ──
 const LABS=[
-  {id:"l1",g:"life",   icon:"🌿",title:"Plant Disease Detection with AI",       sub:"Lab A · Life Sciences",    tool:"Google Teachable Machine",  url:"https://teachablemachine.withgoogle.com",                        us:"teachablemachine.withgoogle.com",   out:"Train an image classifier to detect plant disease — zero code, just your phone camera.",
-   steps:[{t:"Open teachablemachine.withgoogle.com on your phone browser"},{t:"Tap 'Get Started' → 'Image Project' → Standard Image Model"},{t:"Rename Class 1 as 'Healthy' and Class 2 as 'Diseased'"},{t:"Tap 'Webcam' under each class — capture 8–10 photos for each class"},{t:"Tap 'Train Model' — wait 30 seconds while AI learns your photos"},{t:"Under 'Preview', point your camera at any object — see AI classify it live!",ex:"🎯 This is exactly how real plant disease detection AI works in agriculture!"}]},
-  {id:"l2",g:"life",   icon:"🦁",title:"Wildlife & Species Recognition",         sub:"Lab B · Life Sciences",    tool:"iNaturalist",                url:"https://www.inaturalist.org",                                    us:"inaturalist.org",                  out:"Use AI to identify any plant, animal or insect using your phone camera.",
-   steps:[{t:"Open inaturalist.org on your phone"},{t:"Tap the '+' or 'Observe' button"},{t:"Take a photo of any plant in the room — even a potted plant"},{t:"AI instantly suggests 2–3 species matches with confidence scores"},{t:"Tap any suggestion to see species info, habitat, and conservation status"},{t:"Try bark of a tree, a flower, or any insect you can find",ex:"🎯 Used globally for biodiversity monitoring and wildlife conservation!"}]},
-  {id:"l3",g:"commerce",icon:"💬",title:"Customer Sentiment Analysis",           sub:"Lab A · Commerce",         tool:"ChatGPT (Free)",             url:"https://chat.openai.com",                                        us:"chat.openai.com",                  out:"Use AI to extract business intelligence from customer reviews in seconds.",
-   steps:[{t:"Open chat.openai.com on your phone"},{t:"Paste this ready-made prompt:",p:`Classify each review as Positive, Negative or Neutral with a 1-line reason:\n1. "Product quality is excellent but delivery was 3 days late"\n2. "Worst experience ever. No response from support team"\n3. "Decent product for the price, nothing special"\nAlso tell me: what should this business improve?`},{t:"Read the AI analysis — it does NLP (Natural Language Processing) in 2 seconds"},{t:"Now write 3 real reviews of a hotel, restaurant or product you know"},{t:"Paste them with the same prompt — see how AI classifies your own reviews"},{t:"Ask: 'What marketing strategy should this business use?'",ex:"🎯 This is how Amazon, Flipkart and Zomato process thousands of reviews automatically!"}]},
-  {id:"l4",g:"commerce",icon:"🛒",title:"Recommendation Engine Simulation",     sub:"Lab B · Commerce",         tool:"ChatGPT (Free)",             url:"https://chat.openai.com",                                        us:"chat.openai.com",                  out:"Understand how collaborative filtering powers e-commerce recommendations.",
-   steps:[{t:"Open chat.openai.com on your phone"},{t:"Try this prompt:",p:`I am building an e-commerce recommendation engine. A user bought: Rice 5kg, Dal 1kg, Coconut Oil, Turmeric, Mixer Grinder.\n\nUsing collaborative filtering logic, recommend 8 more products. Explain why for each one.`},{t:"Read the recommendations — this is exactly what Amazon's algorithm does"},{t:"Now ask: what if a user bought Laptop, Mouse, USB Hub, Webcam? Recommend for them"},{t:"Ask: 'What is the difference between collaborative and content-based filtering?'"},{t:"Final: ask AI to write a chatbot greeting script for a clothing store",ex:"🎯 Amazon earns 35% of revenue from AI recommendations — you just simulated that system!"}]},
-  {id:"l5",g:"humanities",icon:"🌍",title:"AI Language Translation & Its Limits",sub:"Lab A · Humanities",       tool:"Google Translate",           url:"https://translate.google.co.in",                                 us:"translate.google.co.in",           out:"Explore how AI handles human language — and where it still fails.",
-   steps:[{t:"Open translate.google.co.in on your phone"},{t:"Type this Telugu proverb: 'అందానికి అందం అంటే అందులో అందం' — translate to English then French"},{t:"Reverse-translate the French back to Telugu — what meaning was lost?"},{t:"Try a local idiom: 'It is raining cats and dogs' — translate to Telugu"},{t:"Tap the microphone — speak in Telugu — does AI understand your accent?"},{t:"Try translating a government notice — can AI replace a human translator?",ex:"🎯 AI translates 100 billion words daily — but cultural nuance still challenges it!"}]},
-  {id:"l6",g:"humanities",icon:"🎨",title:"AI Image Generation (Text to Art)",  sub:"Lab B · Humanities",       tool:"DeepAI Text-to-Image",       url:"https://deepai.org/machine-learning-model/text2img",             us:"deepai.org/machine-learning-model/text2img",out:"Generate AI art from text prompts and explore the ethical questions it raises.",
-   steps:[{t:"Open deepai.org/machine-learning-model/text2img on your phone"},{t:"Type: 'Bharat Mata on the banks of Krishna river in the style of Raja Ravi Varma'"},{t:"Tap Generate — wait 15 seconds — see what AI creates!"},{t:"Try: 'A fishing village in futuristic neon cyberpunk style at night'"},{t:"Try: 'A student learning AI on a mobile phone, painted as a watercolour artwork'"},{t:"Discuss: Who owns AI-generated art? Can AI replace artists?",ex:"🎯 Same technology as DALL-E, Midjourney and Stable Diffusion!"}]},
-  {id:"l7",g:"humanities",icon:"🎵",title:"AI Music Composition (Soundraw)",    sub:"Lab C · Humanities",       tool:"Soundraw",                   url:"https://soundraw.io",                                            us:"soundraw.io",                      out:"Experience how AI composes original music by learning from patterns.",
-   steps:[{t:"Open soundraw.io on your phone"},{t:"Click 'Create Music' (no account needed to preview)"},{t:"Select Mood: 'Dramatic' · Genre: 'Cinematic' · Length: 30 seconds"},{t:"Listen to the AI-composed track — it created this music from nothing!"},{t:"Change mood to 'Happy' — notice how AI shifts key, tempo and instruments"},{t:"Try 'Sad' mood with 'Lo-fi' genre — what emotions does AI associate with music?",ex:"🎯 AI music is already used in YouTube videos, films and advertisements!"}]},
-  {id:"l8",g:"math",    icon:"🔬",title:"Protein Structure Prediction (AlphaFold)",sub:"Lab A · Math & Sci",    tool:"AlphaFold EBI Viewer",       url:"https://alphafold.ebi.ac.uk",                                    us:"alphafold.ebi.ac.uk",              out:"Visualise 3D protein structures predicted by DeepMind's Nobel Prize-winning AI.",
-   steps:[{t:"Open alphafold.ebi.ac.uk on your phone"},{t:"In the search bar, type 'insulin' and press Search"},{t:"Click the first result (Homo sapiens insulin)"},{t:"A 3D protein structure appears — drag with your finger to rotate it!"},{t:"Blue = very high confidence, Orange = low confidence. Explore the colours!"},{t:"Search 'hemoglobin' — the oxygen carrier in your blood. Compare both structures!",ex:"🎯 AlphaFold solved a 50-year biology problem — 200 million protein structures predicted!"}]},
-  {id:"l9",g:"math",    icon:"➗",title:"WolframAlpha — AI Maths Solver",         sub:"Lab B · Math & Sci",    tool:"WolframAlpha",               url:"https://www.wolframalpha.com",                                   us:"wolframalpha.com",                 out:"Experience AI solving complex mathematics with full step-by-step explanations.",
-   steps:[{t:"Open wolframalpha.com on your phone"},{t:"Type: 'integrate x^2 * sin(x) dx' — see the full step-by-step solution"},{t:"Try: 'plot sin(x) + cos(2x) from -pi to pi' — see the graph drawn instantly"},{t:"Type: 'prime factorization of 123456789' — AI factors it in milliseconds"},{t:"Try: 'solve x^3 - 6x^2 + 11x - 6 = 0' — cubic equation solved symbolically"},{t:"Type: 'population of India vs China over 50 years' — WolframAlpha knows facts too!",ex:"🎯 WolframAlpha uses Symbolic AI — rules and logic — not statistical ML. Both are valid AI!"}]},
-  {id:"l10",g:"math",   icon:"⚗️",title:"Chemical AI — Drug Similarity",         sub:"Lab C · Math & Sci",    tool:"ChemMine Tools",             url:"https://chemminetools.ucr.edu",                                  us:"chemminetools.ucr.edu",            out:"Use AI to find similar drug compounds — just as pharmaceutical researchers do.",
-   steps:[{t:"Open chemminetools.ucr.edu on your phone"},{t:"Click 'Similarity Workbench'"},{t:"Type 'Aspirin' in the search box and select it"},{t:"Click 'Find Similar Compounds' — AI finds molecules with similar structure"},{t:"Click any result to see the molecule structure and drug-likeness score"},{t:"Compare Aspirin with Ibuprofen — what do common pain relievers share?",ex:"🎯 AI has reduced drug discovery time from 12 years to under 4 years for some compounds!"}]},
-  {id:"l11",g:"cs",     icon:"💻",title:"Vibe Coding — Build an App with AI",    sub:"Lab A · Computer Sci",  tool:"ChatGPT + Notepad.io",       url:"https://chat.openai.com",                                        us:"chat.openai.com + notepad.io",     out:"Build a working quiz app using only natural language — no traditional coding.",
-   steps:[{t:"Open chat.openai.com on your phone"},{t:"Paste this vibe coding prompt:",p:`Write a complete single-file HTML + CSS + JavaScript quiz app:\n- 5 multiple choice questions about AI basics\n- 4 options each, show correct/wrong feedback immediately\n- Show final score with emoji at the end\n- Include a Retry button\n- Mobile-friendly, clean bright white theme\nReturn ONLY the HTML code.`},{t:"ChatGPT generates complete HTML — copy ALL of it (tap and hold → Select All → Copy)"},{t:"Open a new tab → go to notepad.io → paste the code"},{t:"Click Preview or Run — YOUR quiz app runs live in the browser!"},{t:"Go back to ChatGPT: 'Add a 15-second timer per question' — update your app!",ex:"🎯 You just built an app without writing a single line of code — that is Vibe Coding!"}]},
-  {id:"l12",g:"cs",     icon:"🕵️",title:"AI Deepfake Detection (Digital Forensics)",sub:"Lab B · Computer Sci",tool:"Deepfake-O-Meter",           url:"https://zinc.cse.buffalo.edu/ubmdfl/deep-o-meter/landing_page", us:"Deepfake-O-Meter (Buffalo Univ.)", out:"Use AI forensic tools to distinguish real photos from AI-generated fakes.",
-   steps:[{t:"Get a REAL photo: open unsplash.com → search 'face' → download any portrait"},{t:"Get an AI photo: open deepai.org/machine-learning-model/text2img → type 'realistic portrait' → generate and save"},{t:"Open zinc.cse.buffalo.edu/ubmdfl/deep-o-meter/landing_page on your phone"},{t:"Upload the REAL photo — note the authenticity score and which algorithms flag it"},{t:"Upload the AI photo — compare the scores. Can AI detect AI?"},{t:"Also try decopy.ai/ai-image-detector with both images — compare both tools",ex:"🎯 AI-powered digital forensics is critical in cybersecurity and law enforcement!"}]},
+  {id:"l1",g:"life",   icon:"🌿",title:"Plant Disease Detection with AI",     sub:"Lab A · Life Sciences",  tool:"Google Teachable Machine",url:"https://teachablemachine.withgoogle.com",us:"teachablemachine.withgoogle.com",out:"Train an image classifier to detect plant disease — zero code, just your camera.",
+   steps:[{t:"Open teachablemachine.withgoogle.com on your phone"},{t:"Tap 'Get Started' → 'Image Project' → Standard Image Model"},{t:"Rename Class 1 as 'Healthy' and Class 2 as 'Diseased'"},{t:"Tap 'Webcam' under each class — capture 8–10 photos for each"},{t:"Tap 'Train Model' — wait 30 seconds while AI learns"},{t:"Under 'Preview', point camera at an object — see AI classify it live!",ex:"🎯 This is exactly how real plant disease detection AI works in agriculture!"}]},
+  {id:"l2",g:"life",   icon:"🦁",title:"Wildlife & Species Recognition",       sub:"Lab B · Life Sciences",  tool:"iNaturalist",            url:"https://www.inaturalist.org",us:"inaturalist.org",out:"Use AI to identify any plant or animal using your phone camera.",
+   steps:[{t:"Open inaturalist.org on your phone"},{t:"Tap the '+' or 'Observe' button"},{t:"Take a photo of any plant in the room"},{t:"AI instantly suggests 2–3 species matches with confidence scores"},{t:"Tap any suggestion to see species info and conservation status"},{t:"Try bark, a flower, or any insect you can find",ex:"🎯 Used globally for biodiversity monitoring and wildlife conservation!"}]},
+  {id:"l3",g:"commerce",icon:"💬",title:"Customer Sentiment Analysis",         sub:"Lab A · Commerce",       tool:"ChatGPT (Free)",          url:"https://chat.openai.com",us:"chat.openai.com",out:"Use AI to extract business intelligence from customer reviews.",
+   steps:[{t:"Open chat.openai.com on your phone"},{t:"Paste this prompt:",p:`Classify each review as Positive, Negative or Neutral with a 1-line reason:\n1. "Product quality is excellent but delivery was 3 days late"\n2. "Worst experience ever. No response from support team"\n3. "Decent product for the price, nothing special"\nAlso tell me: what should this business improve?`},{t:"Read the AI analysis — NLP in 2 seconds!"},{t:"Write 3 real reviews of a hotel or product you know"},{t:"Paste them with the same prompt — see how AI classifies yours"},{t:"Ask: 'What marketing strategy should this business use?'",ex:"🎯 This is how Amazon, Flipkart and Zomato process reviews automatically!"}]},
+  {id:"l4",g:"commerce",icon:"🛒",title:"Recommendation Engine Simulation",   sub:"Lab B · Commerce",       tool:"ChatGPT (Free)",          url:"https://chat.openai.com",us:"chat.openai.com",out:"Understand how collaborative filtering powers e-commerce recommendations.",
+   steps:[{t:"Open chat.openai.com on your phone"},{t:"Try this prompt:",p:`I am building an e-commerce recommendation engine. A user bought: Rice 5kg, Dal 1kg, Coconut Oil, Turmeric, Mixer Grinder.\n\nUsing collaborative filtering logic, recommend 8 more products. Explain why for each one.`},{t:"Read the AI recommendations — this is what Amazon's algorithm does"},{t:"Ask: what if a user bought Laptop, Mouse, USB Hub, Webcam?"},{t:"Ask: 'What is the difference between collaborative and content-based filtering?'"},{t:"Ask AI to write a chatbot greeting script for a clothing store",ex:"🎯 Amazon earns 35% of revenue from AI recommendations!"}]},
+  {id:"l5",g:"humanities",icon:"🌍",title:"AI Language Translation & Its Limits",sub:"Lab A · Humanities",   tool:"Google Translate",        url:"https://translate.google.co.in",us:"translate.google.co.in",out:"Explore how AI handles human language — and where it fails.",
+   steps:[{t:"Open translate.google.co.in on your phone"},{t:"Type this Telugu proverb: 'అందానికి అందం అంటే అందులో అందం' — translate to English then French"},{t:"Reverse-translate the French back to Telugu — what meaning was lost?"},{t:"Try: 'It is raining cats and dogs' — translate to Telugu"},{t:"Tap the microphone — speak in Telugu — does AI understand your accent?"},{t:"Try translating a government notice — can AI replace a human translator?",ex:"🎯 AI translates 100 billion words daily — but cultural nuance still challenges it!"}]},
+  {id:"l6",g:"humanities",icon:"🎨",title:"AI Image Generation",               sub:"Lab B · Humanities",     tool:"DeepAI Text-to-Image",    url:"https://deepai.org/machine-learning-model/text2img",us:"deepai.org/machine-learning-model/text2img",out:"Generate AI art from text prompts and explore the ethical questions.",
+   steps:[{t:"Open deepai.org/machine-learning-model/text2img on your phone"},{t:"Type: 'Bharat Mata on the banks of Krishna river in Raja Ravi Varma style'"},{t:"Tap Generate — wait 15 seconds — see what AI creates!"},{t:"Try: 'A fishing village in futuristic neon cyberpunk style at night'"},{t:"Try: 'A student learning AI on a mobile phone as a watercolour artwork'"},{t:"Discuss: Who owns AI-generated art? Can AI replace artists?",ex:"🎯 Same technology as DALL-E, Midjourney and Stable Diffusion!"}]},
+  {id:"l7",g:"humanities",icon:"🎵",title:"AI Music Composition",              sub:"Lab C · Humanities",     tool:"Soundraw",                url:"https://soundraw.io",us:"soundraw.io",out:"Experience how AI composes original music from patterns.",
+   steps:[{t:"Open soundraw.io on your phone"},{t:"Click 'Create Music' — no account needed to preview"},{t:"Select Mood: 'Dramatic' · Genre: 'Cinematic' · Length: 30 seconds"},{t:"Listen to the AI-composed track — it created this music from nothing!"},{t:"Change mood to 'Happy' — notice how AI shifts key, tempo and instruments"},{t:"Try 'Sad' mood with 'Lo-fi' — what emotions does AI associate with music?",ex:"🎯 AI music is already used in YouTube videos, films and advertisements!"}]},
+  {id:"l8",g:"math",    icon:"🔬",title:"Protein Structure Prediction (AlphaFold)",sub:"Lab A · Math & Sci",tool:"AlphaFold EBI Viewer",    url:"https://alphafold.ebi.ac.uk",us:"alphafold.ebi.ac.uk",out:"Visualise 3D protein structures predicted by Nobel Prize-winning AI.",
+   steps:[{t:"Open alphafold.ebi.ac.uk on your phone"},{t:"Type 'insulin' in the search bar and press Search"},{t:"Click the first result (Homo sapiens insulin)"},{t:"A 3D protein structure appears — drag with your finger to rotate!"},{t:"Blue = very high confidence, Orange = low confidence"},{t:"Search 'hemoglobin' — compare both structures!",ex:"🎯 AlphaFold solved a 50-year biology problem — 200 million proteins predicted!"}]},
+  {id:"l9",g:"math",    icon:"➗",title:"WolframAlpha — AI Maths Solver",       sub:"Lab B · Math & Sci",    tool:"WolframAlpha",            url:"https://www.wolframalpha.com",us:"wolframalpha.com",out:"AI solving complex mathematics with step-by-step explanations.",
+   steps:[{t:"Open wolframalpha.com on your phone"},{t:"Type: 'integrate x^2 * sin(x) dx' — see the full step-by-step solution"},{t:"Try: 'plot sin(x) + cos(2x) from -pi to pi' — see the graph instantly"},{t:"Type: 'prime factorization of 123456789' — AI factors it in milliseconds"},{t:"Try: 'solve x^3 - 6x^2 + 11x - 6 = 0' — cubic solved symbolically"},{t:"Type: 'population of India vs China over 50 years'",ex:"🎯 WolframAlpha uses Symbolic AI — rules and logic — different from ML!"}]},
+  {id:"l10",g:"math",   icon:"⚗️",title:"Chemical AI — Drug Similarity",       sub:"Lab C · Math & Sci",    tool:"ChemMine Tools",          url:"https://chemminetools.ucr.edu",us:"chemminetools.ucr.edu",out:"Find similar drug compounds — just as pharmaceutical researchers do.",
+   steps:[{t:"Open chemminetools.ucr.edu on your phone"},{t:"Click 'Similarity Workbench'"},{t:"Type 'Aspirin' in the search box and select it"},{t:"Click 'Find Similar Compounds' — AI finds similar molecular structures"},{t:"Click any result to see the molecule structure and drug-likeness score"},{t:"Compare Aspirin with Ibuprofen — what do pain relievers share?",ex:"🎯 AI reduced drug discovery from 12 years to under 4 for some compounds!"}]},
+  {id:"l11",g:"cs",     icon:"💻",title:"Vibe Coding — Build an App with AI",  sub:"Lab A · Computer Sci",  tool:"ChatGPT + Notepad.io",    url:"https://chat.openai.com",us:"chat.openai.com + notepad.io",out:"Build a working quiz app using only natural language — no coding.",
+   steps:[{t:"Open chat.openai.com on your phone"},{t:"Paste this vibe coding prompt:",p:`Write a complete single-file HTML + CSS + JavaScript quiz app:\n- 5 multiple choice questions about AI basics\n- 4 options each, show correct/wrong feedback immediately\n- Show final score with emoji at the end\n- Include a Retry button\n- Mobile-friendly, clean bright white theme\nReturn ONLY the HTML code.`},{t:"ChatGPT generates HTML — copy ALL of it (tap and hold → Select All → Copy)"},{t:"Open a new tab → go to notepad.io → paste the code"},{t:"Click Preview or Run — YOUR quiz app runs live in the browser!"},{t:"Go back to ChatGPT: 'Add a 15-second timer per question' — update your app!",ex:"🎯 You built an app without writing a single line of code — that is Vibe Coding!"}]},
+  {id:"l12",g:"cs",     icon:"🕵️",title:"AI Deepfake Detection",               sub:"Lab B · Computer Sci",  tool:"Deepfake-O-Meter",        url:"https://zinc.cse.buffalo.edu/ubmdfl/deep-o-meter/landing_page",us:"Deepfake-O-Meter (Buffalo Univ.)",out:"Use AI forensic tools to distinguish real photos from AI-generated fakes.",
+   steps:[{t:"Get a REAL photo: open unsplash.com → search 'face' → download a portrait"},{t:"Get an AI photo: open deepai.org → type 'realistic portrait' → generate and save"},{t:"Open zinc.cse.buffalo.edu/ubmdfl/deep-o-meter/landing_page"},{t:"Upload the REAL photo — note the authenticity score"},{t:"Upload the AI photo — compare the scores. Can AI detect AI?"},{t:"Also try decopy.ai/ai-image-detector — compare both tools",ex:"🎯 AI-powered digital forensics is critical in cybersecurity today!"}]},
 ];
 
-// ── CHALLENGES ──
 const CHALLENGES=[
-  {id:"c1",num:"01",e:"🌿",title:"Plant Identification",   desc:"Identify any plant nearby using iNaturalist. Write the species name or best match.",                                              pts:10,bg:"#16A34A"},
-  {id:"c2",num:"02",e:"🌍",title:"Language Translation",  desc:"Translate a Telugu proverb to French using Google Translate. Write what meaning was lost.",                                       pts:10,bg:"#7C3AED"},
-  {id:"c3",num:"03",e:"💬",title:"Sentiment Analysis",    desc:"Write 3 product reviews, paste into ChatGPT for analysis. Write the 3 labels ChatGPT gave.",                                    pts:10,bg:"#1E40AF"},
-  {id:"c4",num:"04",e:"🔬",title:"Protein Explorer",      desc:"Search 'insulin' on AlphaFold, rotate the 3D structure. Write what colour the most confident region is.",                        pts:10,bg:"#DC2626"},
-  {id:"c5",num:"05",e:"💻",title:"Vibe Coding App",       desc:"Generate an HTML quiz app using ChatGPT, run it in notepad.io. Write how many questions your app has.",                          pts:15,bg:"#EA580C"},
-  {id:"c6",num:"⭐",e:"🎨",title:"AI Art Challenge",      desc:"Generate an AI image: 'A futuristic classroom with AI robots teaching students' using DeepAI. Write one word that describes it.", pts:10,bg:"#D97706",bonus:true},
+  {id:"c1",num:"01",e:"🌿",title:"Plant Identification",  desc:"Identify any plant nearby using iNaturalist. Write the species name or best match.",pts:10,bg:"#16A34A"},
+  {id:"c2",num:"02",e:"🌍",title:"Language Translation", desc:"Translate a Telugu proverb to French using Google Translate. Write what meaning was lost.",pts:10,bg:"#7C3AED"},
+  {id:"c3",num:"03",e:"💬",title:"Sentiment Analysis",   desc:"Write 3 product reviews, paste into ChatGPT for analysis. Write the 3 labels ChatGPT gave.",pts:10,bg:"#1E40AF"},
+  {id:"c4",num:"04",e:"🔬",title:"Protein Explorer",     desc:"Search 'insulin' on AlphaFold, rotate the 3D structure. Write the colour of the most confident region.",pts:10,bg:"#DC2626"},
+  {id:"c5",num:"05",e:"💻",title:"Vibe Coding App",      desc:"Generate an HTML quiz app using ChatGPT, run it in notepad.io. Write how many questions your app has.",pts:15,bg:"#EA580C"},
+  {id:"c6",num:"⭐",e:"🎨",title:"AI Art Challenge",     desc:"Generate: 'A futuristic classroom with AI robots teaching students' using DeepAI. Write one word to describe it.",pts:10,bg:"#D97706",bonus:true},
 ];
 
-// ── QUIZ ──
 const QUIZ=[
-  {q:"What type of AI does Google Teachable Machine use when you train it on your photos?",opts:["Symbolic AI / Rule-based","Supervised Machine Learning","Quantum Computing","Genetic Algorithms"],a:1,ex:"Teachable Machine uses supervised machine learning — it learns from the labelled photos you provide for each class."},
-  {q:"AlphaFold (DeepMind) became famous for solving which scientific problem?",opts:["Climate prediction","Protein structure prediction","Cancer gene sequencing","Drug pricing"],a:1,ex:"AlphaFold predicts 3D protein structures from amino acid sequences — a 50-year unsolved problem. It earned the Nobel Prize in Chemistry 2024."},
-  {q:"Analysing customer reviews to classify them as Positive/Negative/Neutral is an example of:",opts:["Computer Vision","Reinforcement Learning","Natural Language Processing (NLP)","Genetic Algorithm"],a:2,ex:"Sentiment analysis reads and understands human language — that is NLP (Natural Language Processing)."},
-  {q:"WolframAlpha solves complex maths using which type of AI?",opts:["Deep Learning Neural Networks","Symbolic / Rule-based AI","Generative Adversarial Networks","Bayesian Networks"],a:1,ex:"WolframAlpha uses symbolic AI — explicit rules and mathematical logic — not statistical machine learning."},
-  {q:"Building an app by describing it in plain English so AI writes the code is called:",opts:["Prompt injection","Vibe Coding","Transfer Learning","Edge AI"],a:1,ex:"Vibe Coding means building software using natural language prompts instead of writing code manually."},
-  {q:"iNaturalist identifies plant and animal species from photos using which AI technique?",opts:["Image Recognition / Computer Vision","Text-to-speech AI","Regression Analysis","Knowledge Graphs"],a:0,ex:"iNaturalist uses deep learning-based image recognition (Computer Vision) trained on millions of labelled wildlife photos."},
-  {q:"Amazon's 'Customers who bought X also bought Y' recommendation system uses:",opts:["Deepfake detection","Collaborative Filtering","Symbolic Logic","Edge Computing"],a:1,ex:"Collaborative filtering finds users with similar purchase histories and recommends items they liked. This is the core of e-commerce AI."},
-  {q:"Which regulation governs healthcare data privacy?",opts:["GDPR","HIPAA","IT Act 2000","PDPB"],a:1,ex:"HIPAA (Health Insurance Portability and Accountability Act) governs healthcare data privacy. GDPR applies in the European Union."},
-  {q:"'Edge AI' means the AI runs:",opts:["Only on supercomputers","On the device itself — phone, camera, sensor","Only for cybersecurity","Only in cloud platforms"],a:1,ex:"Edge AI processes data locally on the device without sending it to the cloud — faster, more private, works offline."},
-  {q:"Deepfake detector tools analyse images for:",opts:["File name and size","Pixel-level patterns, facial inconsistencies and GAN artifacts","GPS metadata","Screen brightness"],a:1,ex:"Deepfake detectors analyse pixel patterns, facial geometry inconsistencies, lighting anomalies and GAN-specific artifacts invisible to the human eye."},
+  {q:"What type of AI does Google Teachable Machine use when trained on your photos?",opts:["Symbolic AI","Supervised Machine Learning","Quantum Computing","Genetic Algorithms"],a:1,ex:"Teachable Machine uses supervised machine learning — it learns from your labelled photos."},
+  {q:"AlphaFold (DeepMind) became famous for solving which scientific problem?",opts:["Climate prediction","Protein structure prediction","Cancer gene sequencing","Drug pricing"],a:1,ex:"AlphaFold predicts 3D protein structures — a 50-year unsolved problem. Nobel Prize 2024."},
+  {q:"Classifying reviews as Positive/Negative/Neutral is an example of:",opts:["Computer Vision","Reinforcement Learning","Natural Language Processing (NLP)","Genetic Algorithm"],a:2,ex:"Sentiment analysis reads human language — that is NLP (Natural Language Processing)."},
+  {q:"WolframAlpha solves maths using which type of AI?",opts:["Deep Learning","Symbolic / Rule-based AI","Generative Adversarial Networks","Bayesian Networks"],a:1,ex:"WolframAlpha uses symbolic AI — explicit rules and mathematical logic, not statistical ML."},
+  {q:"Building an app by describing it in plain English so AI writes the code is called:",opts:["Prompt injection","Vibe Coding","Transfer Learning","Edge AI"],a:1,ex:"Vibe Coding means building software using natural language prompts instead of writing code."},
+  {q:"iNaturalist identifies species from photos using which AI technique?",opts:["Image Recognition / Computer Vision","Text-to-speech AI","Regression Analysis","Knowledge Graphs"],a:0,ex:"iNaturalist uses deep learning-based image recognition (Computer Vision)."},
+  {q:"Amazon's 'Customers who bought X also bought Y' uses:",opts:["Deepfake detection","Collaborative Filtering","Symbolic Logic","Edge Computing"],a:1,ex:"Collaborative filtering finds users with similar purchase histories and recommends accordingly."},
+  {q:"Which regulation governs healthcare data privacy?",opts:["GDPR","HIPAA","IT Act 2000","PDPB"],a:1,ex:"HIPAA (Health Insurance Portability and Accountability Act) governs healthcare data privacy."},
+  {q:"'Edge AI' means the AI runs:",opts:["Only on supercomputers","On the device itself — phone, sensor","Only for cybersecurity","Only in cloud platforms"],a:1,ex:"Edge AI processes data locally on the device — faster, more private, works offline."},
+  {q:"Deepfake detectors analyse images for:",opts:["File name and size","Pixel patterns, facial inconsistencies and GAN artifacts","GPS metadata","Screen brightness"],a:1,ex:"Deepfake detectors find pixel anomalies, facial geometry issues and GAN artifacts invisible to human eye."},
 ];
 
-// ── RESOURCES ──
 const RES=[
   {i:"🌿",n:"Teachable Machine",url:"https://teachablemachine.withgoogle.com",d:"Train image/sound AI — no code",g:"All",gc:"#16A34A",gl:"#F0FDF4"},
-  {i:"🦁",n:"iNaturalist",      url:"https://www.inaturalist.org",             d:"AI species identification",   g:"Life Sci",gc:"#16A34A",gl:"#F0FDF4"},
-  {i:"🧬",n:"AlphaFold Viewer", url:"https://alphafold.ebi.ac.uk",             d:"3D protein structure AI",     g:"Math/Sci",gc:"#DC2626",gl:"#FEF2F2"},
-  {i:"⚗️",n:"ChemMine Tools",  url:"https://chemminetools.ucr.edu",            d:"Drug similarity and chemistry",g:"Math/Sci",gc:"#DC2626",gl:"#FEF2F2"},
-  {i:"🌍",n:"Google Translate", url:"https://translate.google.co.in",          d:"AI language translation",     g:"Humanities",gc:"#7C3AED",gl:"#F5F3FF"},
+  {i:"🦁",n:"iNaturalist",      url:"https://www.inaturalist.org",            d:"AI species identification",   g:"Life Sci",gc:"#16A34A",gl:"#F0FDF4"},
+  {i:"🧬",n:"AlphaFold Viewer", url:"https://alphafold.ebi.ac.uk",            d:"3D protein structure AI",     g:"Math/Sci",gc:"#DC2626",gl:"#FEF2F2"},
+  {i:"⚗️",n:"ChemMine Tools",  url:"https://chemminetools.ucr.edu",           d:"Drug similarity and chemistry",g:"Math/Sci",gc:"#DC2626",gl:"#FEF2F2"},
+  {i:"🌍",n:"Google Translate", url:"https://translate.google.co.in",         d:"AI language translation",     g:"Humanities",gc:"#7C3AED",gl:"#F5F3FF"},
   {i:"🎨",n:"DeepAI Art",       url:"https://deepai.org/machine-learning-model/text2img",d:"Text to image generator",g:"All",gc:"#7C3AED",gl:"#F5F3FF"},
-  {i:"🎵",n:"Soundraw",         url:"https://soundraw.io",                     d:"AI music composition",        g:"Humanities",gc:"#7C3AED",gl:"#F5F3FF"},
-  {i:"🤖",n:"ChatGPT",          url:"https://chat.openai.com",                 d:"Conversational AI assistant", g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
-  {i:"💎",n:"Gemini",           url:"https://gemini.google.com",               d:"Google's AI assistant",       g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
-  {i:"➗",n:"WolframAlpha",      url:"https://www.wolframalpha.com",            d:"Symbolic AI maths solver",    g:"Math/Sci",gc:"#DC2626",gl:"#FEF2F2"},
+  {i:"🎵",n:"Soundraw",         url:"https://soundraw.io",                    d:"AI music composition",        g:"Humanities",gc:"#7C3AED",gl:"#F5F3FF"},
+  {i:"🤖",n:"ChatGPT",          url:"https://chat.openai.com",                d:"Conversational AI assistant", g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
+  {i:"💎",n:"Gemini",           url:"https://gemini.google.com",              d:"Google's AI assistant",       g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
+  {i:"➗",n:"WolframAlpha",      url:"https://www.wolframalpha.com",           d:"Symbolic AI maths solver",    g:"Math/Sci",gc:"#DC2626",gl:"#FEF2F2"},
   {i:"🕵️",n:"Deepfake-O-Meter",url:"https://zinc.cse.buffalo.edu/ubmdfl/deep-o-meter/landing_page",d:"AI deepfake detection",g:"CS",gc:"#EA580C",gl:"#FFF7ED"},
-  {i:"🔍",n:"Decopy AI",        url:"https://decopy.ai/ai-image-detector",     d:"AI image authenticity check", g:"CS",gc:"#EA580C",gl:"#FFF7ED"},
-  {i:"📝",n:"Notepad.io",       url:"https://notepad.io",                      d:"Paste and run HTML code",     g:"CS",gc:"#EA580C",gl:"#FFF7ED"},
-  {i:"📸",n:"Unsplash",         url:"https://unsplash.com",                    d:"Free real photos for labs",   g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
-  {i:"📊",n:"Our World in Data",url:"https://ourworldindata.org",              d:"Economics and social data viz",g:"Humanities",gc:"#7C3AED",gl:"#F5F3FF"},
-  {i:"🌱",n:"Kaggle Datasets",  url:"https://www.kaggle.com/datasets",         d:"Free public AI datasets",     g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
+  {i:"🔍",n:"Decopy AI",        url:"https://decopy.ai/ai-image-detector",    d:"AI image authenticity check", g:"CS",gc:"#EA580C",gl:"#FFF7ED"},
+  {i:"📝",n:"Notepad.io",       url:"https://notepad.io",                     d:"Paste and run HTML code",     g:"CS",gc:"#EA580C",gl:"#FFF7ED"},
+  {i:"📸",n:"Unsplash",         url:"https://unsplash.com",                   d:"Free real photos for labs",   g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
+  {i:"📊",n:"Our World in Data",url:"https://ourworldindata.org",             d:"Economics and social data",   g:"Humanities",gc:"#7C3AED",gl:"#F5F3FF"},
+  {i:"🌱",n:"Kaggle Datasets",  url:"https://www.kaggle.com/datasets",        d:"Free public AI datasets",     g:"All",gc:"#1E40AF",gl:"#EFF6FF"},
 ];
 
-// ══════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════
-const S={name:"",group:"",sessionId:"",sessionInfo:{},steps:{},challenges:{},quiz:{},score:0};
-let unsubLB=null;
+// ── STATE ──
+const S={name:"",group:"",sid:"",sinfo:{},steps:{},challenges:{},quiz:{},score:0};
 
-// ══════════════════════════════════════════════════════════
-// INIT — read ?session= from URL
-// ══════════════════════════════════════════════════════════
+// ── FIREBASE HELPERS ──
+function dbPath(path){ return window._ref(window._db, path); }
+
+async function fbGet(path){
+  const snap = await window._get(dbPath(path));
+  return snap.exists() ? snap.val() : null;
+}
+
+async function fbSet(path, data){
+  try{ await window._set(dbPath(path), data); }catch(e){}
+}
+
+function fbListen(path, cb){
+  window._onValue(dbPath(path), snap=>cb(snap.exists()?snap.val():null));
+}
+
+// ── WAIT FOR FIREBASE ──
+function waitFB(){
+  if(window._firebaseReady) return Promise.resolve();
+  return new Promise(r=>document.addEventListener("firebase-ready",r,{once:true}));
+}
+
+// ── INIT ──
 async function init(){
   const params = new URLSearchParams(window.location.search);
   const sid    = params.get("session");
   if(!sid){ show("scr-nosession"); return; }
-  S.sessionId = sid;
+  S.sid = sid;
 
-  // wait for firebase
-  if(!window._firebaseReady){
-    await new Promise(r=>document.addEventListener("firebase-ready",r,{once:true}));
-  }
+  await waitFB();
 
-  // load session info from Firestore
   try{
-    const snap = await window._fs.getDoc(window._fs.doc(window._db,"sessions",sid));
-    if(!snap.exists()){ show("scr-nosession"); return; }
-    S.sessionInfo = snap.data();
-    populateSessionUI();
+    const info = await fbGet(`sessions/${sid}/info`);
+    if(!info){ show("scr-nosession"); return; }
+    S.sinfo = info;
+    fillSessionUI();
     show("scr-landing");
   }catch(e){
-    // Firebase not configured yet — show landing with placeholder data
-    S.sessionInfo = {college:"Workshop Session", city:"", date:new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})};
-    populateSessionUI();
+    // fallback — show landing anyway
+    S.sinfo = {college:"Workshop Session", city:"", date:new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})};
+    fillSessionUI();
     show("scr-landing");
   }
 }
 
-function populateSessionUI(){
-  const si = S.sessionInfo;
-  document.getElementById("chip-date").textContent    = si.date||"—";
-  document.getElementById("chip-college").textContent = si.city ? `${si.city}` : "—";
-  if(si.customTitle) document.getElementById("sib-title").innerHTML = si.customTitle;
+function fillSessionUI(){
+  document.getElementById("chip-date").textContent    = S.sinfo.date||"—";
+  document.getElementById("chip-college").textContent = S.sinfo.city||S.sinfo.college||"—";
+  if(S.sinfo.customTitle) document.getElementById("sb-title").innerHTML = S.sinfo.customTitle;
 }
 
-// ══════════════════════════════════════════════════════════
-// JOIN
-// ══════════════════════════════════════════════════════════
+// ── JOIN ──
 async function joinWorkshop(){
   const name = document.getElementById("inp-name").value.trim();
   const grp  = document.getElementById("inp-group").value;
   if(!name){toast("Please enter your name 👋");return;}
   if(!grp) {toast("Please select your stream 📚");return;}
   S.name=name; S.group=grp;
-
-  // save to Firebase
   await saveStudent();
-
   show("scr-main");
   buildAll();
-  startLBListener();
+  startLBListen();
 }
 
-async function saveStudent(extra={}){
-  if(!window._firebaseReady) return;
-  try{
-    const ref = window._fs.doc(window._db,"sessions",S.sessionId,"students",S.name.replace(/\s+/g,"_")+"_"+S.group);
-    await window._fs.setDoc(ref,{
-      name:S.name, group:S.group, score:S.score,
-      steps:Object.values(S.steps).filter(Boolean).length,
-      challenges:Object.values(S.challenges).filter(c=>c.done).length,
-      quizCorrect:Object.keys(S.quiz).filter(k=>S.quiz[k]===QUIZ[k]?.a).length,
-      college:S.sessionInfo.college||"", date:S.sessionInfo.date||"",
-      joinedAt: window._fs.serverTimestamp(),
-      ...extra
-    },{merge:true});
-  }catch(e){}
+// ── SAVE STUDENT TO FIREBASE ──
+async function saveStudent(){
+  const key = S.name.replace(/[^a-zA-Z0-9]/g,"_")+"_"+S.group;
+  await fbSet(`sessions/${S.sid}/students/${key}`,{
+    name:S.name, group:S.group, score:S.score,
+    steps:Object.values(S.steps).filter(Boolean).length,
+    challenges:Object.values(S.challenges).filter(c=>c&&c.done).length,
+    quizCorrect:QUIZ.filter((q,i)=>S.quiz[i]===q.a).length,
+    college:S.sinfo.college||"", date:S.sinfo.date||"",
+    joinedAt: Date.now()
+  });
 }
 
-// ══════════════════════════════════════════════════════════
-// LIVE LEADERBOARD via Firestore listener
-// ══════════════════════════════════════════════════════════
-function startLBListener(){
-  if(!window._firebaseReady||!S.sessionId) return;
-  try{
-    const colRef = window._fs.collection(window._db,"sessions",S.sessionId,"students");
-    unsubLB = window._fs.onSnapshot(colRef, snap=>{
-      const students = snap.docs.map(d=>d.data()).sort((a,b)=>b.score-a.score);
-      renderLBData(students);
-      document.getElementById("st-people").textContent = students.length;
-    });
-  }catch(e){}
+// ── LIVE LEADERBOARD ──
+function startLBListen(){
+  fbListen(`sessions/${S.sid}/students`, data=>{
+    if(!data) return;
+    const students = Object.values(data).sort((a,b)=>(b.score||0)-(a.score||0));
+    renderLB(students);
+    document.getElementById("st-people").textContent = students.length;
+  });
 }
 
-function renderLBData(students){
+function renderLB(students){
   const medals=["🥇","🥈","🥉"];
   const avts=["😊","🎓","⚡","🌟","🔥","💡","🚀","🎯","🤖","🌈","🦁","🌿","⚛️","📖","💻"];
-  const list = document.getElementById("lb-list");
-  if(!students.length){list.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--muted);font-weight:700;">No participants yet — be the first to join!</div>`;return;}
-  list.innerHTML=students.slice(0,30).map((r,i)=>{
+  const el=document.getElementById("lbwrap");
+  if(!students||!students.length){el.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--muted);font-weight:700;">No participants yet — be the first!</div>`;return;}
+  el.innerHTML=students.slice(0,30).map((r,i)=>{
     const g=GRP[r.group]||{emoji:"👤",c:"#999",lt:"#eee"};
     const me=r.name===S.name&&r.group===S.group;
-    return `<div class="lb-row ${me?"me":""}">
-      <div class="lb-rank">${medals[i]||"#"+(i+1)}</div>
-      <div class="lb-avatar" style="background:${g.lt};">${avts[i%avts.length]}</div>
-      <div class="lb-name">${r.name}${me?`<span class="lb-you">YOU</span>`:""}</div>
-      <div class="lb-grp" style="background:${g.lt};color:${g.c};">${g.emoji} ${g.name}</div>
-      <div class="lb-score">${r.score} pts</div>
+    return `<div class="lbrow ${me?"me":""}">
+      <div class="lbrank">${medals[i]||"#"+(i+1)}</div>
+      <div class="lbav" style="background:${g.lt};">${avts[i%avts.length]}</div>
+      <div class="lbname">${r.name}${me?`<span class="lbyou">YOU</span>`:""}</div>
+      <div class="lbgrp" style="background:${g.lt};color:${g.c};">${g.emoji} ${g.name}</div>
+      <div class="lbsc">${r.score||0} pts</div>
     </div>`;
   }).join("");
 }
 
 async function doRefresh(){
-  const btn=document.querySelector(".refresh-btn");
+  const btn=document.querySelector(".rbtn");
   btn.textContent="⏳ Loading…"; btn.disabled=true;
-  await getAIComment();
+  const rows=[...document.querySelectorAll(".lbrow")].slice(0,5);
+  if(rows.length){
+    const top=rows.map(r=>`${r.querySelector(".lbname").textContent.replace("YOU","").trim()} (${r.querySelector(".lbgrp").textContent.trim()}) — ${r.querySelector(".lbsc").textContent}`).join("\n");
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:120,messages:[{role:"user",content:`You are hosting a live AI workshop by Dr. C V Krishnaveni. Top students:\n${top}\nWrite ONE warm encouraging sentence (max 25 words) celebrating leaders by name and motivating all participants!`}]})});
+      const d=await res.json();
+      const t=d.content?.map(c=>c.text||"").join("")||"";
+      document.getElementById("aibox").textContent=t?"🤖 "+t:"🤖 Fantastic effort — keep completing those labs!";
+    }catch(e){document.getElementById("aibox").textContent="🤖 Amazing work everyone — every step earns points!";}
+  }
   btn.textContent="🔄 Refresh + AI Commentary"; btn.disabled=false;
 }
 
-async function getAIComment(){
-  // get current top 5 from DOM
-  const rows=[...document.querySelectorAll(".lb-row")].slice(0,5);
-  if(!rows.length){return;}
-  const top=rows.map(r=>`${r.querySelector(".lb-name").textContent.replace("YOU","").trim()} (${r.querySelector(".lb-grp").textContent.trim()}) — ${r.querySelector(".lb-score").textContent}`).join("\n");
-  const el=document.getElementById("ai-box");
-  try{
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:120,
-        messages:[{role:"user",content:`You are the host of a live international AI workshop conducted by Dr. C V Krishnaveni. Current top participants:\n${top}\n\nWrite ONE warm encouraging sentence (max 25 words) celebrating the leaders by name and motivating all participants. Be enthusiastic!`}]})
-    });
-    const d=await res.json();
-    const t=d.content?.map(c=>c.text||"").join("")||"";
-    el.textContent=t?"🤖 "+t:"🤖 Fantastic effort — keep completing those labs and challenges!";
-  }catch(e){el.textContent="🤖 Amazing work everyone — keep going, every step earns points!";}
-}
-
-setInterval(()=>{if(document.getElementById("sec-leaderboard")?.classList.contains("active")) doRefresh();},15000);
-
-// ══════════════════════════════════════════════════════════
-// BUILD UI
-// ══════════════════════════════════════════════════════════
+// ── BUILD ALL ──
 function buildAll(){
   const g=GRP[S.group];
   document.getElementById("welcome-h").textContent=`Welcome, ${S.name}! ${g.emoji}`;
   document.getElementById("pill-name").textContent=`${g.emoji} ${S.name}`;
-  document.getElementById("home-sess-name").textContent=S.sessionInfo.college||"Workshop Session";
-  document.getElementById("home-sess-meta").textContent=`${S.sessionInfo.date||""} · ${S.sessionInfo.city||""}`;
-  document.getElementById("flow-slot").innerHTML=FLOW.map(f=>`<div class="flow-item"><span class="fi-icon">${f.i}</span><span class="fi-label">${f.l}</span><span class="fi-time">${f.t}</span></div>`).join("");
+  document.getElementById("home-sname").textContent=S.sinfo.college||"Workshop Session";
+  document.getElementById("home-smeta").textContent=`${S.sinfo.date||""} · ${S.sinfo.city||""}`;
+  document.getElementById("flow-slot").innerHTML=FLOW.map(f=>`<div class="fi"><span class="fi-i">${f.i}</span><span class="fi-l">${f.l}</span><span class="fi-t">${f.t}</span></div>`).join("");
   buildLabs(); buildChallenges(); buildQuiz(); buildResources(); updateStats();
 }
 
 function updateStats(){
-  const myLabs=LABS.filter(l=>l.g===S.group);
-  document.getElementById("st-labs").textContent=myLabs.length+" labs";
+  document.getElementById("st-labs").textContent=LABS.filter(l=>l.g===S.group).length+" labs";
   document.getElementById("st-steps").textContent=Object.values(S.steps).filter(Boolean).length;
   document.getElementById("st-score").textContent=S.score;
 }
 
 // ── LABS ──
 function buildLabs(){
-  const mine=LABS.filter(l=>l.g===S.group);
   const others=[...new Set(LABS.filter(l=>l.g!==S.group).map(l=>l.g))];
   const order=[S.group,...others];
-  document.getElementById("lab-tabs").innerHTML=order.map((g,i)=>{
+  document.getElementById("ltabs").innerHTML=order.map((g,i)=>{
     const gd=GRP[g];
     return `<button class="ltab ${i===0?"active":""}" onclick="switchGTab('${g}',this)">${gd.emoji} ${gd.name}</button>`;
   }).join("");
-  document.getElementById("lab-panels").innerHTML=order.map((g,gi)=>`
+  document.getElementById("lpanels").innerHTML=order.map((g,gi)=>`
     <div id="gp-${g}" style="display:${gi===0?"block":"none"};">
       ${LABS.filter(l=>l.g===g).map(labCard).join("")}
     </div>`).join("");
 }
 
 function switchGTab(g,btn){
-  document.querySelectorAll(".ltab").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+  document.querySelectorAll(".ltab").forEach(b=>b.classList.remove("active")); btn.classList.add("active");
   document.querySelectorAll("[id^='gp-']").forEach(p=>p.style.display="none");
   document.getElementById("gp-"+g).style.display="block";
 }
@@ -837,27 +679,27 @@ function labCard(lab){
   const total=lab.steps.length;
   const done=lab.steps.filter((_,i)=>S.steps[`${lab.id}-${i}`]).length;
   const pct=Math.round(done/total*100);
-  const stepsHTML=lab.steps.map((s,i)=>{
+  const sh=lab.steps.map((s,i)=>{
     const isDone=!!S.steps[`${lab.id}-${i}`];
-    const pHTML=s.p?`<div class="prompt-wrap"><span class="prompt-box">${esc(s.p)}</span><button class="copy-btn" onclick="doCopy(this,event)">📋 Copy</button></div>`:"";
-    return `<li class="step-item ${isDone?"done":""}" onclick="toggleStep('${lab.id}',${i},this)">
-      <div class="step-check">${isDone?"✓":""}</div>
-      <div class="step-num">${i+1}</div>
-      <div class="step-text">${s.t}${pHTML}${s.ex?`<span class="step-extra">${s.ex}</span>`:""}</div>
+    const pH=s.p?`<div class="pwrap"><span class="pbox">${esc(s.p)}</span><button class="cbtn" onclick="doCopy(this,event)">📋 Copy</button></div>`:"";
+    return `<li class="sitem ${isDone?"done":""}" onclick="toggleStep('${lab.id}',${i},this)">
+      <div class="sck">${isDone?"✓":""}</div>
+      <div class="snum">${i+1}</div>
+      <div class="stxt">${s.t}${pH}${s.ex?`<span class="sex">${s.ex}</span>`:""}</div>
     </li>`;
   }).join("");
-  return `<div class="lab-card anim" id="lc-${lab.id}">
-    <div class="lc-top"><div class="lc-emoji">${lab.icon}</div><div><h3>${lab.title}</h3><p>${lab.sub}</p></div></div>
+  return `<div class="lcard ain" id="lc-${lab.id}">
+    <div class="lc-top"><div class="lc-em">${lab.icon}</div><div><h3>${lab.title}</h3><p>${lab.sub}</p></div></div>
     <div class="tool-row">
-      <a class="tool-link" href="${lab.url}" target="_blank">🔗 ${lab.us} ↗</a>
-      <button class="qr-btn" onclick="openQR('${lab.url}','${esc(lab.tool)}',event)">📱 QR Code</button>
+      <a class="tlink" href="${lab.url}" target="_blank">🔗 ${lab.us} ↗</a>
+      <button class="qbtn" onclick="openQR('${lab.url}','${esc(lab.tool)}',event)">📱 QR Code</button>
     </div>
-    <ul class="steps-list">${stepsHTML}</ul>
-    <div class="prog-row">
-      <div class="prog-labels"><span>Progress</span><span>${done}/${total} steps</span></div>
-      <div class="prog-track"><div class="prog-fill" id="pf-${lab.id}" style="width:${pct}%"></div></div>
+    <ul class="slist">${sh}</ul>
+    <div class="prog-r">
+      <div class="pl"><span>Progress</span><span>${done}/${total} steps</span></div>
+      <div class="ptrack"><div class="pfill" id="pf-${lab.id}" style="width:${pct}%"></div></div>
     </div>
-    <div class="outcome-box">🎯 ${lab.out}</div>
+    <div class="outbox">🎯 ${lab.out}</div>
   </div>`;
 }
 
@@ -865,7 +707,7 @@ function toggleStep(labId,si,el){
   const key=`${labId}-${si}`;
   S.steps[key]=!S.steps[key];
   el.classList.toggle("done",S.steps[key]);
-  el.querySelector(".step-check").textContent=S.steps[key]?"✓":"";
+  el.querySelector(".sck").textContent=S.steps[key]?"✓":"";
   const lab=LABS.find(l=>l.id===labId);
   const done=lab.steps.filter((_,i)=>S.steps[`${labId}-${i}`]).length;
   document.getElementById(`pf-${labId}`).style.width=Math.round(done/lab.steps.length*100)+"%";
@@ -875,25 +717,25 @@ function toggleStep(labId,si,el){
 
 // ── CHALLENGES ──
 function buildChallenges(){
-  document.getElementById("ch-list").innerHTML=CHALLENGES.map(c=>{
+  document.getElementById("clist").innerHTML=CHALLENGES.map(c=>{
     const done=S.challenges[c.id]?.done;
-    return `<div class="ch-card ${done?"done":""}" id="cc-${c.id}">
-      <div class="ch-badge" style="background:${c.bg};">${c.e}</div>
-      <div class="ch-body">
+    return `<div class="ccard ${done?"done":""}" id="cc-${c.id}">
+      <div class="cbadge" style="background:${c.bg};">${c.e}</div>
+      <div class="cbody">
         <h4>${c.num}. ${c.title}</h4><p>${c.desc}</p>
-        <div class="ch-sub">
-          <input class="ch-inp" id="ca-${c.id}" placeholder="Type what you found…" value="${S.challenges[c.id]?.ans||""}" ${done?"disabled":""}>
-          <button class="btn-sub" onclick="submitC('${c.id}')" ${done?"disabled":""}>${done?"✓ Done":"Submit"}</button>
+        <div class="csub">
+          <input class="cinp" id="ca-${c.id}" placeholder="Type what you found…" value="${S.challenges[c.id]?.ans||""}" ${done?"disabled":""}>
+          <button class="bsub" onclick="subC('${c.id}')" ${done?"disabled":""}>${done?"✓ Done":"Submit"}</button>
         </div>
-        <div class="ch-ok">🎉 +${c.pts} pts! "${S.challenges[c.id]?.ans||""}"</div>
+        <div class="cok">🎉 +${c.pts} pts! "${S.challenges[c.id]?.ans||""}"</div>
       </div>
-      <div class="ch-pts">${c.bonus?"⭐ BONUS<br>":""}+${c.pts} pts</div>
+      <div class="cpts">${c.bonus?"⭐ BONUS<br>":""}+${c.pts} pts</div>
     </div>`;
   }).join("");
   updateChScore();
 }
 
-function submitC(id){
+function subC(id){
   const ans=document.getElementById("ca-"+id).value.trim();
   if(!ans){toast("Please write what you found! 📝");return;}
   const c=CHALLENGES.find(x=>x.id===id);
@@ -901,11 +743,10 @@ function submitC(id){
   S.score+=c.pts;
   const card=document.getElementById("cc-"+id);
   card.classList.add("done");
-  card.querySelector(".btn-sub").disabled=true;
-  card.querySelector(".btn-sub").textContent="✓ Done";
+  card.querySelector(".bsub").disabled=true; card.querySelector(".bsub").textContent="✓ Done";
   card.querySelector("#ca-"+id).disabled=true;
-  card.querySelector(".ch-ok").style.display="block";
-  card.querySelector(".ch-ok").textContent=`🎉 +${c.pts} pts! "${ans}"`;
+  card.querySelector(".cok").style.display="block";
+  card.querySelector(".cok").textContent=`🎉 +${c.pts} pts! "${ans}"`;
   updateChScore(); updateStats(); saveStudent(); toast(`🏆 +${c.pts} pts!`);
 }
 
@@ -918,16 +759,16 @@ function updateChScore(){
 
 // ── QUIZ ──
 function buildQuiz(){
-  document.getElementById("quiz-slot").innerHTML=
-    QUIZ.map((q,i)=>`<div class="q-card" id="qc-${i}">
-      <div class="q-num">Question ${i+1} of ${QUIZ.length} · +5 pts</div>
-      <div class="q-text">${q.q}</div>
-      <div class="q-opts">${q.opts.map((o,oi)=>`<button class="q-opt" id="qo-${i}-${oi}" onclick="ansQ(${i},${oi})">${o}</button>`).join("")}</div>
-      <div class="q-fb" id="qf-${i}"></div>
+  document.getElementById("qslot").innerHTML=
+    QUIZ.map((q,i)=>`<div class="qcard" id="qc-${i}">
+      <div class="qnum">Question ${i+1} of ${QUIZ.length} · +5 pts</div>
+      <div class="qtxt">${q.q}</div>
+      <div class="qopts">${q.opts.map((o,oi)=>`<button class="qopt" id="qo-${i}-${oi}" onclick="ansQ(${i},${oi})">${o}</button>`).join("")}</div>
+      <div class="qfb" id="qf-${i}"></div>
     </div>`).join("")
-    +`<div style="text-align:center;margin:1.4rem 0;">
-      <button onclick="showQRes()" style="background:var(--blue2);color:white;border:none;padding:13px 30px;border-radius:10px;font-family:var(--font);font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.3);">See My Quiz Score 🎯</button>
-    </div><div class="quiz-result" id="qr-res"></div>`;
+    +`<div style="text-align:center;margin:1.3rem 0;">
+      <button onclick="showQRes()" style="background:var(--blue2);color:white;border:none;padding:12px 28px;border-radius:9px;font-family:var(--font);font-size:.97rem;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.3);">See My Quiz Score 🎯</button>
+    </div><div id="qres" style="display:none;background:var(--white);border:2px solid var(--blue-mid);border-radius:var(--r);padding:1.6rem;text-align:center;box-shadow:var(--shadow-lg);"></div>`;
 }
 
 function ansQ(qi,oi){
@@ -949,44 +790,44 @@ function showQRes(){
   const correct=QUIZ.filter((q,i)=>S.quiz[i]===q.a).length;
   const pct=Math.round(correct/QUIZ.length*100);
   const grade=pct>=80?"🏆 Excellent!":pct>=60?"👍 Good Job!":pct>=40?"📚 Keep Practising!":"🔄 Review the Labs!";
-  const el=document.getElementById("qr-res");
+  const el=document.getElementById("qres");
   el.style.display="block";
-  el.innerHTML=`<div style="font-size:2.8rem;">${grade.split(" ")[0]}</div>
-    <div style="font-family:var(--serif);font-size:2rem;font-weight:900;color:var(--blue);margin:.5rem 0;">${correct} / ${QUIZ.length}</div>
-    <div style="font-size:.95rem;color:var(--muted);font-weight:700;">${pct}% correct · +${correct*5} pts added</div>
-    <div style="font-size:1.15rem;font-weight:800;color:var(--teal);margin-top:.5rem;">${grade}</div>`;
+  el.innerHTML=`<div style="font-size:2.6rem;">${grade.split(" ")[0]}</div>
+    <div style="font-family:var(--serif);font-size:1.9rem;font-weight:900;color:var(--blue);margin:.4rem 0;">${correct} / ${QUIZ.length}</div>
+    <div style="font-size:.92rem;color:var(--muted);font-weight:700;">${pct}% correct · +${correct*5} pts added</div>
+    <div style="font-size:1.1rem;font-weight:800;color:var(--teal);margin-top:.4rem;">${grade}</div>`;
   el.scrollIntoView({behavior:"smooth"});
 }
 
 // ── RESOURCES ──
 function buildResources(){
-  document.getElementById("res-grid").innerHTML=RES.map(r=>`
-    <a class="res-card" href="${r.url}" target="_blank">
-      <div class="rc-icon">${r.i}</div>
-      <div class="rc-grp" style="background:${r.gl};color:${r.gc};">${r.g}</div>
-      <div class="rc-name">${r.n}</div>
-      <div class="rc-desc">${r.d}</div>
-      <div class="rc-url">${r.url.replace("https://","")}</div>
-      <div class="rc-qr" onclick="openQR('${r.url}','${esc(r.n)}',event)">📱 Scan QR</div>
+  document.getElementById("rgrid").innerHTML=RES.map(r=>`
+    <a class="rcard" href="${r.url}" target="_blank">
+      <div class="rc-i">${r.i}</div>
+      <div class="rc-g" style="background:${r.gl};color:${r.gc};">${r.g}</div>
+      <div class="rc-n">${r.n}</div>
+      <div class="rc-d">${r.d}</div>
+      <div class="rc-u">${r.url.replace("https://","")}</div>
+      <div class="rc-q" onclick="openQR('${r.url}','${esc(r.n)}',event)">📱 Scan QR</div>
     </a>`).join("");
 }
 
 // ── QR ──
 function openQR(url,name,e){
   if(e){e.preventDefault();e.stopPropagation();}
-  document.getElementById("qr-tname").textContent=name;
-  document.getElementById("qr-urltext").textContent=url;
-  document.getElementById("qr-wrap").innerHTML="";
-  new QRCode(document.getElementById("qr-wrap"),{text:url,width:200,height:200,colorDark:"#000",colorLight:"#fff",correctLevel:QRCode.CorrectLevel.M});
-  document.getElementById("qr-overlay").classList.add("open");
+  document.getElementById("qr-name").textContent=name;
+  document.getElementById("qr-url").textContent=url;
+  document.getElementById("qrwrap").innerHTML="";
+  new QRCode(document.getElementById("qrwrap"),{text:url,width:190,height:190,colorDark:"#000",colorLight:"#fff",correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById("qro").classList.add("open");
 }
-function maybeClose(e){if(e.target===document.getElementById("qr-overlay"))closeQR();}
-function closeQR(){document.getElementById("qr-overlay").classList.remove("open");}
+function mqClose(e){if(e.target===document.getElementById("qro"))closeQR();}
+function closeQR(){document.getElementById("qro").classList.remove("open");}
 
-// ── COPY PROMPT ──
+// ── COPY ──
 function doCopy(btn,e){
   e.stopPropagation();
-  const t=btn.parentElement.querySelector(".prompt-box").textContent;
+  const t=btn.parentElement.querySelector(".pbox").textContent;
   navigator.clipboard.writeText(t).then(()=>{btn.textContent="✓ Copied!";btn.classList.add("copied");setTimeout(()=>{btn.textContent="📋 Copy";btn.classList.remove("copied");},2000);})
   .catch(()=>{const ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;opacity:0;";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);btn.textContent="✓ Copied!";btn.classList.add("copied");setTimeout(()=>{btn.textContent="📋 Copy";btn.classList.remove("copied");},2000);});
 }
@@ -1003,10 +844,9 @@ function goSec(id,btn){
 // ── UTILS ──
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
 function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
-function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2400);}
+function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2300);}
 
-// start
-window.addEventListener("load",init);
+window.addEventListener("load", init);
 </script>
 </body>
 </html>
